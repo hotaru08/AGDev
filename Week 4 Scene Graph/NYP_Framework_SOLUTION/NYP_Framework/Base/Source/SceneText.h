@@ -16,7 +16,7 @@ class SceneManager;
 class TextEntity;
 class Light;
 class SceneText : public Scene
-{	
+{
 public:
 	SceneText();
 	~SceneText();
