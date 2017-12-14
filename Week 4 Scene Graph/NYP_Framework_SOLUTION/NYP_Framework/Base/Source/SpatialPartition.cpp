@@ -4,6 +4,8 @@
 #include "GraphicsManager.h"
 #include "RenderHelper.h"
 #include "LevelOfDetail\LevelOfDetail.h"
+#include "PlayerInfo\PlayerInfo.h"
+#include "MeshBuilder.h"
 
 template <typename T> vector<T> concat(vector<T> &a, vector<T> &b) {
 	vector<T> ret = vector<T>();
@@ -162,6 +164,14 @@ void CSpatialPartition::Update(void)
 
 		MigrationList.clear();
 	}
+
+	gridX = ((CPlayerInfo::GetInstance()->GetPos().x >= 0) ? (
+		int)((CPlayerInfo::GetInstance()->GetPos().x / xGridSize)) : 
+		(int)(((CPlayerInfo::GetInstance()->GetPos().x - xGridSize) / xGridSize))) * xGridSize + (xGridSize / 2);
+
+	gridZ = ((CPlayerInfo::GetInstance()->GetPos().z >= 0) ? 
+		(int)((CPlayerInfo::GetInstance()->GetPos().z / zGridSize)) : 
+		(int)(((CPlayerInfo::GetInstance()->GetPos().z - zGridSize) / zGridSize))) * zGridSize + (zGridSize / 2);
 }
 
 /********************************************************************************
@@ -173,10 +183,17 @@ void CSpatialPartition::Render(Vector3* theCameraPosition)
 	MS& modelStack = GraphicsManager::GetInstance()->GetModelStack();
 
 	modelStack.PushMatrix();
+	modelStack.Translate(gridX * xGridSize + (xGridSize / 2), 10, gridZ * zGridSize + (zGridSize / 2));
+	modelStack.Scale(xGridSize, 1, zGridSize);
+	modelStack.Rotate(90, 1, 0, 0);
+	RenderHelper::RenderMesh(MeshBuilder::GetInstance()->GetMesh("gridpos"));
+	modelStack.PopMatrix();
+
+	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, yOffset, 0.0f);
 	for (int i = 0; i<xNumOfGrid; i++)
 	{
-		for (int j = 0; j<zNumOfGrid; j++)
+		for (int j = 0; j < zNumOfGrid; j++)
 		{
 			modelStack.PushMatrix();
 			modelStack.Translate(xGridSize*i - (xSize >> 1), 0.0f, zGridSize*j - (zSize >> 1));

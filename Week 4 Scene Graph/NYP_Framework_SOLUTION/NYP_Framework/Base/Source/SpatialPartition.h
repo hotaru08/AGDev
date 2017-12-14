@@ -22,6 +22,7 @@ protected:
 	int zNumOfGrid;
 	float yOffset;
 	std::string _meshName; // Name of the mesh
+	int gridX, gridZ;
 
 public:
 	static CSpatialPartition *GetInstance()
