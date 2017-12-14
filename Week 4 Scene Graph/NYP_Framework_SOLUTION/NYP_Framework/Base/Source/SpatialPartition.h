@@ -24,7 +24,9 @@ protected:
 	std::string _meshName; // Name of the mesh
 	int gridX, gridZ;
 
+
 public:
+	bool renderPos;
 	static CSpatialPartition *GetInstance()
 	{
 		if (!sp_instance)

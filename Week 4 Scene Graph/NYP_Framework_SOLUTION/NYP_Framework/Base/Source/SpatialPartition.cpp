@@ -32,6 +32,7 @@ CSpatialPartition::CSpatialPartition(void)
 	, yOffset(0.0f)
 	, _meshName("")
 	, theCamera(NULL)
+	, renderPos(false)
 {
 }
 
@@ -182,16 +183,19 @@ void CSpatialPartition::Render(Vector3* theCameraPosition)
 	// Render the Spatial Partitions
 	MS& modelStack = GraphicsManager::GetInstance()->GetModelStack();
 
-	modelStack.PushMatrix();
-	modelStack.Translate(gridX * xGridSize + (xGridSize / 2), 10, gridZ * zGridSize + (zGridSize / 2));
-	modelStack.Scale(xGridSize, 1, zGridSize);
-	modelStack.Rotate(90, 1, 0, 0);
-	RenderHelper::RenderMesh(MeshBuilder::GetInstance()->GetMesh("gridpos"));
-	modelStack.PopMatrix();
+	if (renderPos)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(gridX, yOffset, gridZ);
+		modelStack.Scale(xGridSize, 0.1, zGridSize);
+		//modelStack.Rotate(90, 1, 0, 0);
+		RenderHelper::RenderMesh(MeshBuilder::GetInstance()->GetMesh("gridpos"));
+		modelStack.PopMatrix();
+	}
 
 	modelStack.PushMatrix();
 	modelStack.Translate(0.0f, yOffset, 0.0f);
-	for (int i = 0; i<xNumOfGrid; i++)
+	for (int i = 0; i < xNumOfGrid; i++)
 	{
 		for (int j = 0; j < zNumOfGrid; j++)
 		{

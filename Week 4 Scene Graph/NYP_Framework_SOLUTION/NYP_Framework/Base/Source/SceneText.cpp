@@ -133,7 +133,7 @@ void SceneText::Init()
 	// ------------------------------------------------- Meshes ------------------------------------------------- //
 	MeshBuilder::GetInstance()->GenerateAxes("reference");
 	MeshBuilder::GetInstance()->GenerateCrossHair("crosshair");
-	MeshBuilder::GetInstance()->GenerateQuad("gridpos", Color(1, 0, 0), 1.f);
+	MeshBuilder::GetInstance()->GenerateCube("gridpos", Color(1, 0, 0), 1.f);
 	MeshBuilder::GetInstance()->GenerateQuad("quad", Color(1, 1, 1), 1.f);
 	MeshBuilder::GetInstance()->GetMesh("quad")->textureID = LoadTGA("Image//calibri.tga");
 	MeshBuilder::GetInstance()->GenerateText("text", 16, 16);
@@ -329,6 +329,12 @@ void SceneText::Update(double dt)
 
 	if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
 		FileManager::GetInstance()->EditMapFile("Files//Scene.csv");
+
+	if (KeyboardController::GetInstance()->IsKeyPressed('0'))
+		CSpatialPartition::GetInstance()->renderPos = true;
+
+	if (KeyboardController::GetInstance()->IsKeyPressed('9'))
+		CSpatialPartition::GetInstance()->renderPos = false;
 
 	// THIS WHOLE CHUNK TILL <THERE> CAN REMOVE INTO ENTITIES LOGIC! Or maybe into a scene function to keep the update clean
 	if (KeyboardController::GetInstance()->IsKeyDown('1'))
