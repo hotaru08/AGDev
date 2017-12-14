@@ -10,7 +10,7 @@ using namespace std;
 // Update all entities
 void EntityManager::Update(double _dt)
 {
-	std::list<EntityBase*>::iterator it, it2, it3;
+	std::list<EntityBase*>::iterator it, it2, it3, it4;
 
 	// Update all entities
 	for (it = entityList.begin(); it != entityList.end(); ++it)
@@ -28,6 +28,11 @@ void EntityManager::Update(double _dt)
 	for (it3 = projectileList.begin(); it3 != projectileList.end(); ++it3)
 	{
 		(*it3)->Update(_dt);
+	}
+
+	for (it4 = createdList.begin(); it4 != createdList.end(); ++it4)
+	{
+		(*it4)->Update(_dt);
 	}
 
 	//render the scene graph
@@ -91,7 +96,22 @@ void EntityManager::Update(double _dt)
 		}
 	}
 
-	cout << projectileList.size() << endl;
+	// Clean Up Projectile that are done
+	it4 = createdList.begin();
+	while (it4 != createdList.end())
+	{
+		if ((*it4)->IsDone())
+		{
+			// Delete if done
+			delete *it4;
+			it4 = createdList.erase(it4);
+		}
+		else
+		{
+			// Move on otherwise
+			++it4;
+		}
+	}
 }
 
 // Render all entities
@@ -121,6 +141,14 @@ void EntityManager::Render()
 		(*it3)->Render();
 	}
 
+	//render entities that are created
+	std::list<EntityBase*>::iterator it4, end4;
+	end4 = createdList.end();
+	for (it4 = createdList.begin(); it4 != end4; ++it4)
+	{
+		(*it4)->Render();
+	}
+
 	//render the scene graph
 	CSceneGraph::GetInstance()->Render();
 
@@ -138,6 +166,14 @@ void EntityManager::RenderUI()
 	for (it = entityList.begin(); it != end; ++it)
 	{
 		(*it)->RenderUI();
+	}
+
+	// Render all entities UI
+	std::list<EntityBase*>::iterator it2, end2;
+	end2 = createdList.end();
+	for (it2 = createdList.begin(); it2 != end2; ++it2)
+	{
+		(*it2)->RenderUI();
 	}
 }
 
@@ -260,6 +296,44 @@ bool EntityManager::RemoveProjectile(EntityBase * _existingEnemy)
 	return false;
 }
 
+void EntityManager::AddCreated(EntityBase * _newCreated, bool bAddToSpatialPartition)
+{
+	_newCreated->SetIsDone(false);
+	createdList.push_back(_newCreated);
+
+	// Choose to add entity to Spatial Partition or not
+	if (theSpatialPartition && bAddToSpatialPartition)
+		theSpatialPartition->Add(_newCreated);
+}
+
+bool EntityManager::RemoveCreated(EntityBase * _existingCreated)
+{
+	// Find the entity's iterator
+	std::list<EntityBase*>::iterator findIter = std::find(createdList.begin(), createdList.end(), _existingCreated);
+
+	// Delete the entity if found
+	if (findIter != createdList.end())
+	{
+		delete *findIter;
+		findIter = createdList.erase(findIter);
+
+		// Remove Scene Node too
+		if (!CSceneGraph::GetInstance()->DeleteNode(_existingCreated))
+		{
+			cout << "EntityManager::RemoveCreated: Unable to remove" << endl;
+		}
+		else
+		{
+			// Remove from Spatial Partition
+			if (theSpatialPartition)
+				theSpatialPartition->Remove(_existingCreated);
+		}
+		return true;
+	}
+	// Return false if not found
+	return false;
+}
+
 // Mark an Entity for deletion
 bool EntityManager::MarkForDeletion(EntityBase * _existingEntity)
 {
@@ -269,6 +343,8 @@ bool EntityManager::MarkForDeletion(EntityBase * _existingEntity)
 	std::list<EntityBase*>::iterator it2 = std::find(EnemyList.begin(), EnemyList.end(), _existingEntity);
 	// Find the projectile's iterator
 	std::list<EntityBase*>::iterator it3 = std::find(projectileList.begin(), projectileList.end(), _existingEntity);
+	// Find the created's iterator
+	std::list<EntityBase*>::iterator it4 = std::find(createdList.begin(), createdList.end(), _existingEntity);
 
 	// Delete the entity if found
 	if (it != entityList.end())
@@ -291,6 +367,13 @@ bool EntityManager::MarkForDeletion(EntityBase * _existingEntity)
 		return true;
 	}
 
+	// Delete the created if found
+	if (it4 != createdList.end())
+	{
+		(*it4)->SetIsDone(true);
+		return true;
+	}
+
 	// Return false if not found
 	return false;
 }
@@ -298,6 +381,16 @@ bool EntityManager::MarkForDeletion(EntityBase * _existingEntity)
 void EntityManager::SetSpatialPartition(CSpatialPartition * theSpartialPartition)
 {
 	this->theSpatialPartition = theSpartialPartition;
+}
+
+list<EntityBase*>& EntityManager::returnEnemy(void)
+{
+	return EnemyList;
+}
+
+list<EntityBase*>& EntityManager::returnEntity(void)
+{
+	return entityList;
 }
 
 // Constructor

@@ -5,6 +5,9 @@
 #include <string>
 #include "Collider/Collider.h"
 #include "LevelOfDetail\LevelOfDetail.h"
+#include <string>
+
+using std::string;
 
 class Mesh;
 
@@ -19,9 +22,12 @@ public:
 
 	// Set the maxAABB and minAABB
 	void SetAABB(Vector3 maxAABB, Vector3 minAABB);
+	void SetName(string _name);
+	string GetName();
 
 private:
 	Mesh* modelMesh;
+	string name;
 };
 
 namespace Create

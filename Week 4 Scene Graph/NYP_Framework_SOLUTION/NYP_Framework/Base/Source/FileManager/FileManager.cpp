@@ -285,7 +285,24 @@ bool FileManager::ReadMapFile(const string myFile)
 				tempData = "";
 			}
 			GenericEntity* temp = Create::Entity(theOBJinfo.type, Vector3(theOBJinfo.posX, theOBJinfo.posY, theOBJinfo.posZ), Vector3(theOBJinfo.scalex, theOBJinfo.scaley, theOBJinfo.scalez));
+			temp->SetRotate(theOBJinfo.rotateAngle);
 			temp->SetAABB(Vector3(theOBJinfo.maxAABBx, theOBJinfo.maxAABBy, theOBJinfo.maxAABBz), Vector3(theOBJinfo.minAABBx, theOBJinfo.minAABBy, theOBJinfo.minAABBz));
+
+			if (temp->GetName() == "Tree_Hi")
+			{
+				temp->InitLOD("Tree_Hi", "Tree_Med", "Tree_Lo");
+			}
+
+			if (temp->GetName() == "TombStone_Hi")
+			{
+				temp->InitLOD("TombStone_Hi", "TombStone_Med", "TombStone_Lo");
+			}
+
+			if (temp->GetName() == "House_Hi")
+			{
+				temp->InitLOD("House_Hi", "House_Med", "House_Lo");
+			}
+
 			nextData = 0;
 		}
 		return true;
@@ -296,23 +313,25 @@ bool FileManager::ReadMapFile(const string myFile)
 
 void FileManager::EditMapFile(const string myFile)
 {
-}
-
-Vector3 FileManager::Token2Vector(string token)
-{
-	return Vector3();
-}
-
-double FileManager::Token2Double(string token)
-{
-	return 0.0;
-}
-
-bool FileManager::Token2Bool(string token)
-{
-	return false;
-}
-
-void FileManager::clearVector()
-{
+	ofstream File;
+	File.open(myFile);
+	File << "Name,posX,posY,posZ,minAABBx,minAABBy,minAABBz,maxAABBx,maxAABBy,maxAABBz,scaleX,scaleY,scaleZ,rotateAngle\n";
+	for (list<EntityBase*>::iterator it = EntityManager::GetInstance()->returnEntity().begin(); it != EntityManager::GetInstance()->returnEntity().end(); ++it)
+	{
+		GenericEntity* temp = (GenericEntity*)*it;
+		File << temp->GetName() << ","
+			<< temp->GetPosition().x << ","
+			<< temp->GetPosition().y << ","
+			<< temp->GetPosition().z << ","
+			<< temp->GetMinAABB().x << ","
+			<< temp->GetMinAABB().y << ","
+			<< temp->GetMinAABB().z << ","
+			<< temp->GetMaxAABB().x << ","
+			<< temp->GetMaxAABB().y << ","
+			<< temp->GetMaxAABB().z << ","
+			<< temp->GetScale().x << ","
+			<< temp->GetScale().y << ","
+			<< temp->GetScale().z << ","
+			<< temp->GetRotate() << "\n";
+	}
 }

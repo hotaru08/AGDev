@@ -166,7 +166,7 @@ void CEnemy::Render(void)
 	modelStack.PushMatrix();
 	modelStack.Translate(position.x, position.y, position.z);
 	modelStack.Scale(scale.x, scale.y, scale.z);
-
+	modelStack.Rotate(rotate, 0, 1, 0);
 	// LOD of enemy
 	if (GetLODStatus())
 	{

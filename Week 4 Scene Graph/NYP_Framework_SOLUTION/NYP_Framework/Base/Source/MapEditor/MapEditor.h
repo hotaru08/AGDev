@@ -17,6 +17,7 @@ public:
 		OBJECT = 0,
 		HOUSE,
 		TREE,
+		TOMBSTONE,
 	};
 
 	enum SCALE_AXIS

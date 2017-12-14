@@ -59,7 +59,7 @@ TextEntity* Create::Text2DObject(const std::string& _meshName, const Vector3& _p
 	result->SetPosition(_position);
 	result->SetScale(_scale);
 	result->SetTextRenderMode(TextEntity::MODE_2D);
-	EntityManager::GetInstance()->AddEntity(result);
+	EntityManager::GetInstance()->AddCreated(result);
 	return result;
 }
 

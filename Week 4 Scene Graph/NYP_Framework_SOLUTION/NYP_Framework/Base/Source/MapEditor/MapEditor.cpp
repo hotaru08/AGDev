@@ -7,6 +7,7 @@
 #include <string>
 #include "KeyboardController.h"
 #include "../GenericEntity.h"
+#include "../FileManager/FileManager.h"
 
 using std::string;
 
@@ -40,7 +41,7 @@ void MapEditor::renderObj(void)
 			modelStack.Translate(displacement.x, displacement.y, displacement.z);
 			modelStack.Rotate(rotate, 0.f, 1.f, 0.f);
 			modelStack.Scale(scale.x, scale.y, scale.z);
-			RenderHelper::RenderMeshWithLight(MeshBuilder::GetInstance()->GetMesh("cube"));
+			RenderHelper::RenderMeshWithLight(MeshBuilder::GetInstance()->GetMesh("House_Hi"));
 			modelStack.PopMatrix();
 			break;
 		}
@@ -52,7 +53,19 @@ void MapEditor::renderObj(void)
 			modelStack.Translate(displacement.x, displacement.y, displacement.z);
 			modelStack.Rotate(rotate, 0.f, 1.f, 0.f);
 			modelStack.Scale(scale.x, scale.y, scale.z);
-			RenderHelper::RenderMeshWithLight(MeshBuilder::GetInstance()->GetMesh("cone"));
+			RenderHelper::RenderMeshWithLight(MeshBuilder::GetInstance()->GetMesh("Tree_Hi"));
+			modelStack.PopMatrix();
+			break;
+		}
+
+		case TOMBSTONE:
+		{
+			MS& modelStack = GraphicsManager::GetInstance()->GetModelStack();
+			modelStack.PushMatrix();
+			modelStack.Translate(displacement.x, displacement.y, displacement.z);
+			modelStack.Rotate(rotate, 0.f, 1.f, 0.f);
+			modelStack.Scale(scale.x, scale.y, scale.z);
+			RenderHelper::RenderMeshWithLight(MeshBuilder::GetInstance()->GetMesh("TombStone_Hi"));
 			modelStack.PopMatrix();
 			break;
 		}
@@ -87,6 +100,13 @@ void MapEditor::renderOption(void)
 	case TREE:
 	{
 		ObjectS = "TREE";
+		break;
+
+	}
+
+	case TOMBSTONE:
+	{
+		ObjectS = "TOMBSTONE";
 		break;
 
 	}
@@ -183,19 +203,25 @@ void MapEditor::updateOption(double dt)
 			objType = TREE;
 
 		else if (objType == TREE)
+			objType = TOMBSTONE;
+
+		else if (objType == TOMBSTONE)
 			objType = OBJECT;
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed(VK_NUMPAD6))
 	{
 		if (objType == OBJECT)
-			objType = TREE;
+			objType = TOMBSTONE;
 
 		else if (objType == HOUSE)
 			objType = OBJECT;
 
 		else if (objType == TREE)
 			objType = HOUSE;
+
+		else if (objType == TOMBSTONE)
+			objType = TREE;
 	}
 
 	if (KeyboardController::GetInstance()->IsKeyPressed(VK_NUMPAD9))
@@ -269,19 +295,30 @@ void MapEditor::updateOption(double dt)
 		{
 		case HOUSE:
 		{
-			GenericEntity* anotherCube = Create::Entity("cube", displacement, scale);
-			anotherCube->SetCollider(true);
-			anotherCube->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
-
+			GenericEntity* House = Create::Entity("House_Hi", displacement, scale);
+			House->SetCollider(true);
+			House->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+			House->InitLOD("House_Hi", "House_Med", "House_Lo");
 			break;
 		}
 
 		case TREE:
 		{
-			GenericEntity* anotherCube = Create::Entity("cone", displacement, scale);
-			anotherCube->SetCollider(true);
-			anotherCube->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+			GenericEntity* Tree = Create::Entity("Tree_Hi", displacement, scale);
+			Tree->SetCollider(true);
+			Tree->SetRotate(rotate);
+			Tree->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+			Tree->InitLOD("Tree_Hi", "Tree_Med", "Tree_Lo");
+			break;
+		}
 
+		case TOMBSTONE:
+		{
+			GenericEntity* Tomb = Create::Entity("TombStone_Hi", displacement, scale);
+			Tomb->SetCollider(true);
+			Tomb->SetRotate(rotate);
+			Tomb->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
+			Tomb->InitLOD("TombStone_Hi", "TombStone_Med", "TombStone_Lo");
 			break;
 		}
 		}

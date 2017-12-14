@@ -25,6 +25,7 @@
 #include "CUpdateTransformation.h"
 
 #include "MapEditor\MapEditor.h"
+#include "FileManager\FileManager.h"
 
 #include <iostream>
 using namespace std;
@@ -171,17 +172,44 @@ void SceneText::Init()
 	MeshBuilder::GetInstance()->GetMesh("LeftLeg_Hi")->textureID = LoadTGA("Image//Assignment1//Zombie.tga");
 	MeshBuilder::GetInstance()->GetMesh("RightLeg_Hi")->textureID = LoadTGA("Image//Assignment1//Zombie.tga");
 
+	// tree
+	MeshBuilder::GetInstance()->GenerateOBJ("Tree_Hi", "OBJ//tree//Tree.obj");
+	MeshBuilder::GetInstance()->GetMesh("Tree_Hi")->textureID = LoadTGA("Image//Assignment1//Tree_Hi.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("Tree_Med", "OBJ//tree//Tree_med.obj");
+	MeshBuilder::GetInstance()->GetMesh("Tree_Med")->textureID = LoadTGA("Image//Assignment1//Tree_Med.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("Tree_Lo", "OBJ//tree//Tree_lo.obj");
+	MeshBuilder::GetInstance()->GetMesh("Tree_Lo")->textureID = LoadTGA("Image//Assignment1//Tree_Lo.tga");
+
+	// tombstone
+	MeshBuilder::GetInstance()->GenerateOBJ("TombStone_Hi", "OBJ//tombstone//tombstone.obj");
+	MeshBuilder::GetInstance()->GetMesh("TombStone_Hi")->textureID = LoadTGA("Image//Assignment1//TombStone_Hi.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("TombStone_Med", "OBJ//tombstone//tombstone_med.obj");
+	MeshBuilder::GetInstance()->GetMesh("TombStone_Med")->textureID = LoadTGA("Image//Assignment1//TombStone_Med.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("TombStone_Lo", "OBJ//tombstone//tombstone_lo.obj");
+	MeshBuilder::GetInstance()->GetMesh("TombStone_Lo")->textureID = LoadTGA("Image//Assignment1//TombStone_Lo.tga");
+
+	// house
+	MeshBuilder::GetInstance()->GenerateOBJ("House_Hi", "OBJ//house//house.obj");
+	MeshBuilder::GetInstance()->GetMesh("House_Hi")->textureID = LoadTGA("Image//Assignment1//House_Hi.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("House_Med", "OBJ//house//house_med.obj");
+	MeshBuilder::GetInstance()->GetMesh("House_Med")->textureID = LoadTGA("Image//Assignment1//House_Med.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("House_Lo", "OBJ//house//house_lo.obj");
+	MeshBuilder::GetInstance()->GetMesh("House_Lo")->textureID = LoadTGA("Image//Assignment1//House_Lo.tga");
+
 	// ------------------------------------------------- Spatial Partitioning ------------------------------------------------- //
 	MeshBuilder::GetInstance()->GenerateQuad("GRIDMESH", Color(1.f, 1.f, 1.f), 10.f);
 	CSpatialPartition::GetInstance()->Init(100, 100, 10, 10);
 	CSpatialPartition::GetInstance()->SetMesh("GRIDMESH");
 	CSpatialPartition::GetInstance()->SetCamera(&camera);
-	CSpatialPartition::GetInstance()->SetLevelOfDetails(20000.0f, 40000.0f);
+	CSpatialPartition::GetInstance()->SetLevelOfDetails(40000.0f, 80000.0f);
 	EntityManager::GetInstance()->SetSpatialPartition(CSpatialPartition::GetInstance());
 
 	// ------------------------------------------------- Creation of Entities ------------------------------------------------- //
 	Create::Entity("reference", Vector3(0.0f, 0.0f, 0.0f)); // Reference
 	Create::Entity("lightball", Vector3(lights[0]->position.x, lights[0]->position.y, lights[0]->position.z));
+
+	FileManager::GetInstance()->init();
+	FileManager::GetInstance()->ReadMapFile("Files//Scene.csv");
 
 	// ------------------------------------------------- Scene Graph ------------------------------------------------- //
 	CEnemy* ZombieBody = Create::Enemy("Body_Hi", Vector3(10.0f, 10.f, 10.0f));
@@ -297,6 +325,9 @@ void SceneText::Update(double dt)
 
 	if (MapEditor::GetInstance()->mapEditing)
 		MapEditor::GetInstance()->updateOption(dt);
+
+	if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
+		FileManager::GetInstance()->EditMapFile("Files//Scene.csv");
 
 	// THIS WHOLE CHUNK TILL <THERE> CAN REMOVE INTO ENTITIES LOGIC! Or maybe into a scene function to keep the update clean
 	if (KeyboardController::GetInstance()->IsKeyDown('1'))

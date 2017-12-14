@@ -28,9 +28,16 @@ public:
 	void AddProjectile(EntityBase* _newEnemy, bool bAddToSpatialPartition = false);
 	bool RemoveProjectile(EntityBase* _existingEnemy);
 
+	// Add and Remove from createdList
+	void AddCreated(EntityBase* _newCreated, bool bAddToSpatialPartition = false);
+	bool RemoveCreated(EntityBase* _existingCreated);
+
 	// Spartial Partitioning
 	bool MarkForDeletion(EntityBase* _existingEntity);
 	void SetSpatialPartition(CSpatialPartition* theSpartialPartition);
+
+	list<EntityBase*>&returnEnemy(void);
+	list<EntityBase*>&returnEntity(void);
 
 private:
 	EntityManager();
@@ -58,6 +65,7 @@ private:
 	bool InBox(Vector3 Hit, Vector3 B1, Vector3 B2, const int Axis);
 
 	std::list<EntityBase*> entityList;
+	std::list<EntityBase*> createdList;
 	std::list<EntityBase*> EnemyList;
 	std::list<EntityBase*> projectileList;
 

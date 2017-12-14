@@ -60,12 +60,6 @@ public:
 	bool ReadMapFile(const string myFile); // read the file containing map stuff
 
 	void EditMapFile(const string myFile); // editing the map file with what editor creates
-
-	Vector3 Token2Vector(string token);
-	double Token2Double(string token);
-	bool Token2Bool(string token);
-
-	void clearVector();
 };
 
 #endif

@@ -24,6 +24,8 @@ void GenericEntity::Render()
 	modelStack.PushMatrix();
 	modelStack.Translate(position.x, position.y, position.z);
 	modelStack.Scale(scale.x, scale.y, scale.z);
+	modelStack.Rotate(rotate, 0, 1, 0);
+
 	if (GetLODStatus()) // LOD is true
 	{
 		// if there are details
@@ -42,6 +44,16 @@ void GenericEntity::SetAABB(Vector3 maxAABB, Vector3 minAABB)
 	this->minAABB = minAABB;
 }
 
+void GenericEntity::SetName(string _name)
+{
+	name = _name;
+}
+
+string GenericEntity::GetName()
+{
+	return this->name;
+}
+
 GenericEntity* Create::Entity(	const std::string& _meshName, 
 								const Vector3& _position,
 								const Vector3& _scale)
@@ -54,6 +66,7 @@ GenericEntity* Create::Entity(	const std::string& _meshName,
 	result->SetPosition(_position);
 	result->SetScale(_scale);
 	result->SetCollider(false);
+	result->SetName(_meshName);
 	EntityManager::GetInstance()->AddEntity(result, true);
 	return result;
 }
