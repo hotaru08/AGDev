@@ -72,17 +72,16 @@ void CGrid::Update(vector<EntityBase*>* migrationList)
 		if (((min.x < position.x) && (position.x >= max.x)) &&
 			((min.z < position.z) && (position.z >= max.z)))
 		{
-			// Move on otherwise
-			++it;
-		}
-		else
-		{
 			// Those that left the grids, store into storage vector
 			migrationList->push_back(*it);
 
 			// Remove from this Grid
 			it = ListOfObjects.erase(it);
-			
+		}
+		else
+		{
+			// Move on otherwise
+			++it;
 		}
 	}
 }

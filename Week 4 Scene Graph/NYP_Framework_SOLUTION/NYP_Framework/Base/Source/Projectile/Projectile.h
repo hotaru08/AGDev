@@ -18,10 +18,10 @@ public:
 	// get status of the projectile. true == active, false == inactive
 	bool GetStatus(void) const;
 	// Set the position and direction of the projectile
-	void Set(	Vector3 theNewPosition, 
-				Vector3 theNewDirection, 
-				const float m_fLifetime, 
-				const float m_fSpeed);
+	void Set(Vector3 theNewPosition,
+		Vector3 theNewDirection,
+		const float m_fLifetime,
+		const float m_fSpeed);
 	void SetDirection(Vector3 theNewDirection);
 	// Get the direction of the projectile
 	Vector3 GetDirection(void);
@@ -42,7 +42,7 @@ public:
 	void Update(double dt = 0.0333f);
 	// Render this projectile
 	void Render(void);
-//private:
+	//private:
 	// The model mesh for this projectile
 	Mesh* modelMesh;
 	// Boolean flag to indicate if this projectile is active. If not active, then do not compute/update
@@ -59,11 +59,11 @@ public:
 
 namespace Create
 {
-	CProjectile* Projectile(const std::string& _meshName, 
-							const Vector3& _position, 
-							const Vector3& _direction, 
-							const float m_fLifetime, 
-							const float m_fSpeed,
-							CPlayerInfo* _source=NULL);
+	CProjectile* Projectile(const std::string& _meshName,
+		const Vector3& _position,
+		const Vector3& _direction,
+		const float m_fLifetime,
+		const float m_fSpeed,
+		CPlayerInfo* _source = NULL);
 };
 

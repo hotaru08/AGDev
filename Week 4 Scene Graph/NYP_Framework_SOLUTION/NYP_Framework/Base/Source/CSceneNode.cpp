@@ -1,6 +1,5 @@
 #include "CSceneNode.h"
 #include "GraphicsManager.h"
-#include "CSceneGraph.h"
 
 CSceneNode::CSceneNode(void)
 	: ID(-1)
@@ -94,7 +93,8 @@ CSceneNode* CSceneNode::GetEntity(EntityBase* theEntity)
 		}
 	}
 	return NULL;
-}
+}
+
 
 // get a child from this node using its ID
 CSceneNode * CSceneNode::GetEntity(const int ID)
@@ -149,7 +149,7 @@ CSceneNode * CSceneNode::AddChild(EntityBase * theEntity)
 		// setting this as parent
 		aNewNode->SetParent(this);
 		//generate ID
-		aNewNode->SetID(CSceneGraph::GetInstance()->GenerateID());
+		//aNewNode->SetID(CSceneGraph::GetInstance()->GeneerateID());
 		// add to vector
 		theChildren.push_back(aNewNode);
 		// return this new scene node
@@ -281,10 +281,6 @@ bool CSceneNode::DeleteAllChildren(void)
 // Detach a child from this node using the pointer to the node
 CSceneNode* CSceneNode::DetachChild(EntityBase* theEntity)
 {
-	// if it is inside this node, then return this node
-	if (this->ID == ID)
-		return this;
-
 	// if there is children
 	if (theChildren.size() != 0)
 	{
@@ -373,7 +369,6 @@ void CSceneNode::Render(void)
 {
 	MS& modelStack = GraphicsManager::GetInstance()->GetModelStack();
 	modelStack.PushMatrix();
-
 	if (theEntity)
 	{
 		//modelStack.LoadMatrix(this->GetTransform());
@@ -395,6 +390,8 @@ void CSceneNode::Render(void)
 		// Render the entity
 		theEntity->Render();
 	}
+	else
+		return;
 
 	// Render the children
 	std::vector<CSceneNode*>::iterator it;
@@ -402,7 +399,6 @@ void CSceneNode::Render(void)
 	{
 		(*it)->Render();
 	}
-
 	modelStack.PopMatrix();
 }
 // print self for debug purposes

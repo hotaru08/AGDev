@@ -48,9 +48,9 @@ CPlayerInfo::~CPlayerInfo(void)
 void CPlayerInfo::Init(void)
 {
 	// Set the default values
-	defaultPosition.Set(0,0,10);
-	defaultTarget.Set(0,0,0);
-	defaultUp.Set(0,1,0);
+	defaultPosition.Set(0, 0, 10);
+	defaultTarget.Set(0, 0, 0);
+	defaultUp.Set(0, 1, 0);
 
 	// Set the current values
 	position.Set(0, 0, 10);
@@ -58,7 +58,7 @@ void CPlayerInfo::Init(void)
 	up.Set(0, 1, 0);
 
 	// Set Boundary
-	maxBoundary.Set(1,1,1);
+	maxBoundary.Set(1, 1, 1);
 	minBoundary.Set(-1, -1, -1);
 
 	// Set the pistol as the primary weapon
@@ -265,8 +265,8 @@ void CPlayerInfo::UpdateFreeFall(double dt)
 }
 
 /********************************************************************************
- Hero Update
- ********************************************************************************/
+Hero Update
+********************************************************************************/
 void CPlayerInfo::Update(double dt)
 {
 	double mouse_diff_x, mouse_diff_y;
@@ -275,7 +275,7 @@ void CPlayerInfo::Update(double dt)
 	double camera_yaw = mouse_diff_x * 0.0174555555555556;		// 3.142 / 180.0
 	double camera_pitch = mouse_diff_y * 0.0174555555555556;	// 3.142 / 180.0
 
-	// Update the position if the WASD buttons were activated
+																// Update the position if the WASD buttons were activated
 	if (KeyboardController::GetInstance()->IsKeyDown('W') ||
 		KeyboardController::GetInstance()->IsKeyDown('A') ||
 		KeyboardController::GetInstance()->IsKeyDown('S') ||

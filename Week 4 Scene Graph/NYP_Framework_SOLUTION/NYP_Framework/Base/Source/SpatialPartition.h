@@ -43,9 +43,9 @@ public:
 	~CSpatialPartition(void);
 
 	// Initialise the spatial partition
-	bool Init(	const int xGridSize, const int zGridSize, 
-				const int xNumOfGrid, const int zNumOfGrid, 
-				const float yOffset = -9.9f);
+	bool Init(const int xGridSize, const int zGridSize,
+		const int xNumOfGrid, const int zNumOfGrid,
+		const float yOffset = -9.9f);
 
 	// Set a particular grid's Mesh
 	void SetMesh(const std::string& _meshName);

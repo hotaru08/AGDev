@@ -157,18 +157,24 @@ void SceneText::Init()
 	// ------------------------------------------------- Zombie
 	// High Level
 	MeshBuilder::GetInstance()->GenerateOBJ("Body_Hi", "OBJ//Zombie//High//Body_Hi.obj");
-	MeshBuilder::GetInstance()->GetMesh("Body_Hi")->textureID = LoadTGA("Image//Assignment1//ZombieBody.tga");
 	MeshBuilder::GetInstance()->GenerateOBJ("Head_Hi", "OBJ//Zombie//High//Head_Hi.obj");
-	MeshBuilder::GetInstance()->GetMesh("Head_Hi")->textureID = LoadTGA("Image//Assignment1//Zombie.tga");
 	MeshBuilder::GetInstance()->GenerateOBJ("RightArm_Hi", "OBJ//Zombie//High//RightArm_Hi.obj");
+	MeshBuilder::GetInstance()->GenerateOBJ("LeftArm_Hi", "OBJ//Zombie//High//LeftArm_Hi.obj");
+	MeshBuilder::GetInstance()->GenerateOBJ("RightLeg_Hi", "OBJ//Zombie//High//RightLeg_Hi.obj");
+	MeshBuilder::GetInstance()->GenerateOBJ("LeftLeg_Hi", "OBJ//Zombie//High//LeftLeg_Hi.obj");
+	MeshBuilder::GetInstance()->GetMesh("Body_Hi")->textureID = LoadTGA("Image//Assignment1//ZombieBody.tga");
+	MeshBuilder::GetInstance()->GetMesh("Head_Hi")->textureID = LoadTGA("Image//Assignment1//Zombie.tga");
 	MeshBuilder::GetInstance()->GetMesh("RightArm_Hi")->textureID = LoadTGA("Image//Assignment1//ZombieArms.tga");
+	MeshBuilder::GetInstance()->GetMesh("LeftArm_Hi")->textureID = LoadTGA("Image//Assignment1//ZombieArms.tga");
+	MeshBuilder::GetInstance()->GetMesh("LeftLeg_Hi")->textureID = LoadTGA("Image//Assignment1//Zombie.tga");
+	MeshBuilder::GetInstance()->GetMesh("RightLeg_Hi")->textureID = LoadTGA("Image//Assignment1//Zombie.tga");
 
 	// ------------------------------------------------- Spatial Partitioning ------------------------------------------------- //
 	MeshBuilder::GetInstance()->GenerateQuad("GRIDMESH", Color(1.f, 1.f, 1.f), 10.f);
 	CSpatialPartition::GetInstance()->Init(100, 100, 10, 10);
 	CSpatialPartition::GetInstance()->SetMesh("GRIDMESH");
 	CSpatialPartition::GetInstance()->SetCamera(&camera);
-	CSpatialPartition::GetInstance()->SetLevelOfDetails(5000.0f, 10000.0f);
+	CSpatialPartition::GetInstance()->SetLevelOfDetails(20000.0f, 40000.0f);
 	EntityManager::GetInstance()->SetSpatialPartition(CSpatialPartition::GetInstance());
 
 	// ------------------------------------------------- Creation of Entities ------------------------------------------------- //
@@ -176,39 +182,54 @@ void SceneText::Init()
 	Create::Entity("lightball", Vector3(lights[0]->position.x, lights[0]->position.y, lights[0]->position.z));
 
 	// ------------------------------------------------- Scene Graph ------------------------------------------------- //
-	//GenericEntity* aCube = Create::Entity("cube", Vector3(-20.0f, 0.0f, -20.0f));
-	//aCube->SetCollider(true);
-	//aCube->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
-	//aCube->InitLOD("cube", "sphere", "cubeSG");
-
-	//////Add the pointer to this new entity to the Scene Graph
-	//CSceneNode* theNode = CSceneGraph::GetInstance()->AddNode(aCube);
-
-	//GenericEntity* anotherCube = Create::Entity("cube", Vector3(-20.0f, 5.0f, -20.0f));
-	//anotherCube->SetCollider(true);
-	//anotherCube->SetAABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(-0.5f, -0.5f, -0.5f));
-
-	////Add the pointer to this new entity to the Scene Graph and as a child of aCube
-	//CSceneNode* anotherNode = theNode->AddChild(anotherCube);
-
-	GenericEntity* ZombieBody = Create::Entity("Body_Hi", Vector3(0.0f, 0.0f, 0.0f));
+	CEnemy* ZombieBody = Create::Enemy("Body_Hi", Vector3(10.0f, 10.f, 10.0f));
+	ZombieBody->Init();
+	ZombieBody->SetCollider(true);
 	CSceneNode* baseNode = CSceneGraph::GetInstance()->AddNode(ZombieBody);
 
 	// Translate the node
-	/*CUpdateTransformation* baseMtx = new CUpdateTransformation();
+	CUpdateTransformation* baseMtx = new CUpdateTransformation();
 	baseMtx->ApplyUpdate(0.01f, 0.0f, 0.0f);
 	baseMtx->SetSteps(-30, 30);
-	baseNode->SetUpdateTransformation(baseMtx);*/
+	baseNode->SetUpdateTransformation(baseMtx);
 
-	// Base -> Child
+	// Child
+	// |
+	// Base 
 	GenericEntity* ZombieHead = Create::Entity("Head_Hi", Vector3(0.0f, 0.0f, 0.0f));
-	CSceneNode* childNode = baseNode->AddChild(ZombieHead);
+	//ZombieHead->SetCollider(true);
+	//ZombieHead->SetAABB(Vector3(1.f, 1.f, 1.f), Vector3(-1.f, -1.f, -1.f));
+	CSceneNode* ZombieHeadNode = baseNode->AddChild(ZombieHead);
 	//childNode->ApplyTranslate(0.0f, 1.0f, 0.0f);
 
-	// Child <- Base -> Child
+	// Child
+	// |
+	// Base -> Child
 	GenericEntity* ZombieRightArm = Create::Entity("RightArm_Hi", Vector3(0.0f, 0.0f, 0.0f));
-	CSceneNode* grandchildNode = baseNode->AddChild(ZombieRightArm);
+	CSceneNode* ZombieRightArmNode = baseNode->AddChild(ZombieRightArm);
 	//grandchildNode->ApplyTranslate(0.0f, 0.0f, 1.0f);
+
+	//         Child
+	//           |
+	// Child <- Base -> Child
+	GenericEntity* ZombieLeftArm = Create::Entity("LeftArm_Hi", Vector3(0.0f, 0.0f, 0.0f));
+	CSceneNode* ZombieLeftArmNode = baseNode->AddChild(ZombieLeftArm);
+
+	//         Child
+	//           |
+	// Child <- Base -> Child
+	//			|
+	//		  Child
+	GenericEntity* ZombieRightLeg = Create::Entity("RightLeg_Hi", Vector3(0.0f, 0.0f, 0.0f));
+	CSceneNode* ZombieRightLegNode = baseNode->AddChild(ZombieRightLeg);
+
+	//         Child
+	//           |
+	// Child <- Base -> Child
+	//		|	 	 |
+	//	  Child		Child
+	GenericEntity* ZombieLeftLeg = Create::Entity("LeftLeg_Hi", Vector3(0.0f, 0.0f, 0.0f));
+	CSceneNode* ZombieLeftLegNode = baseNode->AddChild(ZombieLeftLeg);
 
 	// Rotate the node
 	/*CUpdateTransformation* aRotateMtx = new CUpdateTransformation();

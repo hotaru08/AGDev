@@ -87,7 +87,7 @@ void CGrenade::SetTerrain(GroundEntity * m_pTerrain)
 }
 
 CGrenade * Create::Grenade(const std::string & _meshName, const Vector3 & _position, const Vector3 & _direction,
-							const float m_fLifetime, const float m_fSpeed, CPlayerInfo * _source)
+	const float m_fLifetime, const float m_fSpeed, CPlayerInfo * _source)
 {
 	Mesh* modelMesh = MeshBuilder::GetInstance()->GetMesh(_meshName);
 	if (modelMesh == nullptr)

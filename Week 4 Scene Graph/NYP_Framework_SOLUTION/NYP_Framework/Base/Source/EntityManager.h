@@ -16,8 +16,17 @@ public:
 	void Render();
 	void RenderUI();
 
+	// Add and Remove from entityList
 	void AddEntity(EntityBase* _newEntity, bool bAddToSpatialPartition = false);
 	bool RemoveEntity(EntityBase* _existingEntity);
+
+	// Add and Remove from EnemyList
+	void AddEnemy(EntityBase* _newEnemy, bool bAddToSpatialPartition = false);
+	bool RemoveEnemy(EntityBase* _existingEnemy);
+
+	// Add and Remove from projectileList
+	void AddProjectile(EntityBase* _newEnemy, bool bAddToSpatialPartition = false);
+	bool RemoveProjectile(EntityBase* _existingEnemy);
 
 	// Spartial Partitioning
 	bool MarkForDeletion(EntityBase* _existingEntity);
@@ -35,6 +44,9 @@ private:
 	bool CheckAABBCollision(EntityBase *ThisEntity, EntityBase *ThatEntity);
 	// Check if any Collider is colliding with another Collider
 	bool CheckForCollision(void);
+	// Check if any Collider is colliding with another Collider (Enemy)
+	bool CheckForCollisionEnemy(void);
+
 
 	// check for intersection between a line segment and a plane
 	bool GetIntersection(const float fDst1, const float fDst2, Vector3 P1, Vector3 P2, Vector3 &Hit);
@@ -46,6 +58,8 @@ private:
 	bool InBox(Vector3 Hit, Vector3 B1, Vector3 B2, const int Axis);
 
 	std::list<EntityBase*> entityList;
+	std::list<EntityBase*> EnemyList;
+	std::list<EntityBase*> projectileList;
 
 	// Handler to Spatial Partition class
 	CSpatialPartition* theSpatialPartition;

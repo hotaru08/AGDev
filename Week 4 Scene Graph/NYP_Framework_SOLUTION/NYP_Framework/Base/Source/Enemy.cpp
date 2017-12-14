@@ -2,8 +2,9 @@
 #include "EntityManager.h"
 #include "GraphicsManager.h"
 #include "RenderHelper.h"
+#include "MeshBuilder.h"
 
-CEnemy::CEnemy(void)
+CEnemy::CEnemy(Mesh* modelMesh)
 	: GenericEntity(NULL)
 	, defaultPosition(Vector3(0.0f, 0.0f, 0.0f))
 	, defaultTarget(Vector3(0.0f, 0.0f, 0.0f))
@@ -12,8 +13,10 @@ CEnemy::CEnemy(void)
 	, up(Vector3(0.0f, 0.0f, 0.0f))
 	, maxBoundary(Vector3(0.0f, 0.0f, 0.0f))
 	, minBoundary(Vector3(0.0f, 0.0f, 0.0f))
+	, health(0)
 	, m_pTerrain(NULL)
 {
+	this->modelMesh = modelMesh;
 }
 
 CEnemy::~CEnemy()
@@ -40,15 +43,15 @@ void CEnemy::Init(void)
 	// Set speed
 	m_dSpeed = 1.0;
 
+	// Set health
+	health = 1;
+
 	// Initialise the LOD meshes
-	InitLOD("cube", "sphere", "cubeSG");
+	InitLOD("Body_Hi", "Body_Hi", "Body_Hi");
 
 	// Initialise the Collider
 	this->SetCollider(true);
 	this->SetAABB(Vector3(1, 1, 1), Vector3(-1, -1, -1));
-
-	// Add to EntityManager
-	EntityManager::GetInstance()->AddEntity(this, true);
 }
 
 void CEnemy::Reset(void)
@@ -90,6 +93,18 @@ void CEnemy::SetTerrain(GroundEntity * m_pTerrain)
 	}
 }
 
+// Set the health of enemies
+void CEnemy::SetHealth(int health)
+{
+	this->health = health;
+}
+
+// Get the health of enemies
+int CEnemy::GetHealth()
+{
+	return health;
+}
+
 Vector3 CEnemy::GetPos(void) const
 {
 	return this->position;
@@ -119,11 +134,11 @@ void CEnemy::Update(double dt)
 	Constrain();
 
 	//update the target
-	if (position.z > 400.0f)
+	/*if (position.z > 400.0f)
 		target.z = position.z * -1;
 
 	else if (position.z < -400.0f)
-		target.z = position.z * -1;
+		target.z = position.z * -1;*/
 }
 
 void CEnemy::Constrain(void)
@@ -151,13 +166,30 @@ void CEnemy::Render(void)
 	modelStack.PushMatrix();
 	modelStack.Translate(position.x, position.y, position.z);
 	modelStack.Scale(scale.x, scale.y, scale.z);
-	if (GetLODStatus() == true)
+
+	// LOD of enemy
+	if (GetLODStatus())
 	{
 		if (theDetailLevel != NO_DETAILS)
-		{
 			RenderHelper::RenderMesh(GetLODMesh());
-		}
 	}
 	modelStack.PopMatrix();
 
+}
+
+// Creation of Entities
+CEnemy * Create::Enemy(const std::string & _meshName, const Vector3 & _position, 
+						const Vector3 & _scale, int _health)
+{
+	Mesh* modelMesh = MeshBuilder::GetInstance()->GetMesh(_meshName);
+	if (modelMesh == nullptr)
+		return nullptr;
+
+	CEnemy* result = new CEnemy(modelMesh);
+	result->SetPosition(_position);
+	result->SetScale(_scale);
+	result->SetHealth(_health);
+	result->SetCollider(false);
+	EntityManager::GetInstance()->AddEnemy(result, true);
+	return result;
 }

@@ -4,8 +4,7 @@
 
 class Mesh;
 
-class CEnemy :
-	public GenericEntity
+class CEnemy : public GenericEntity
 {
 protected:
 	Vector3 defaultPosition, defaultTarget, defaultUp;
@@ -15,15 +14,19 @@ protected:
 
 	double m_dSpeed;
 	double m_dAcceleration;
+	int health;
+
+private:
+	// Meshes
+	Mesh* modelMesh;
 
 public:
-	CEnemy(void);
+	CEnemy(Mesh* modelMesh);
 	virtual ~CEnemy();
 
 	void Init(void);
 	// reset this player instance to default
 	void Reset(void);
-
 
 	//set position
 	void SetPos(const Vector3& pos);
@@ -36,6 +39,11 @@ public:
 	// set the terrain for the enemy
 	void SetTerrain(GroundEntity* m_pTerrain);
 
+	// Set health
+	void SetHealth(int health);
+	// Get health
+	int GetHealth();
+
 	// get position
 	Vector3 GetPos(void) const;
 	// get target
@@ -47,10 +55,17 @@ public:
 
 	// update
 	void Update(double dt = 0.0333f);
-
 	// constrain the position within the borders 
 	void Constrain(void);
-
 	//render
 	void Render(void);
+};
+
+// Create Enemy Entities
+namespace Create
+{
+	CEnemy* Enemy(const std::string& _meshName,
+		const Vector3& _position,
+		const Vector3& _scale = Vector3(1.0f, 1.0f, 1.0f),
+		int _health = 1);
 };
