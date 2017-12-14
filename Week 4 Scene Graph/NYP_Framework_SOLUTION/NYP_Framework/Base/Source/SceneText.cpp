@@ -24,6 +24,8 @@
 #include "CSceneNode.h"
 #include "CUpdateTransformation.h"
 
+#include "MapEditor\MapEditor.h"
+
 #include <iostream>
 using namespace std;
 
@@ -289,6 +291,13 @@ void SceneText::Update(double dt)
 	// Update our entities
 	EntityManager::GetInstance()->Update(dt);
 
+	/*Map Editor*/
+	if (KeyboardController::GetInstance()->IsKeyPressed(VK_NUMPAD2))
+		MapEditor::GetInstance()->mapEditing = true;
+
+	if (MapEditor::GetInstance()->mapEditing)
+		MapEditor::GetInstance()->updateOption(dt);
+
 	// THIS WHOLE CHUNK TILL <THERE> CAN REMOVE INTO ENTITIES LOGIC! Or maybe into a scene function to keep the update clean
 	if (KeyboardController::GetInstance()->IsKeyDown('1'))
 		glEnable(GL_CULL_FACE);
@@ -380,12 +389,19 @@ void SceneText::Render()
 	GraphicsManager::GetInstance()->AttachCamera(&camera);
 	EntityManager::GetInstance()->Render();
 
+	if (MapEditor::GetInstance()->mapEditing)
+		MapEditor::GetInstance()->renderObj();
+
 	// Setup 2D pipeline then render 2D
 	int halfWindowWidth = Application::GetInstance().GetWindowWidth() / 2;
 	int halfWindowHeight = Application::GetInstance().GetWindowHeight() / 2;
 	GraphicsManager::GetInstance()->SetOrthographicProjection(-halfWindowWidth, halfWindowWidth, -halfWindowHeight, halfWindowHeight, -10, 10);
 	GraphicsManager::GetInstance()->DetachCamera();
 	EntityManager::GetInstance()->RenderUI();
+
+	/*Render Map Editor Options.*/
+	if (MapEditor::GetInstance()->mapEditing)
+		MapEditor::GetInstance()->renderOption();
 }
 
 void SceneText::Exit()
