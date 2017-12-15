@@ -3,6 +3,7 @@
 #include "GraphicsManager.h"
 #include "RenderHelper.h"
 #include "MeshBuilder.h"
+#include "PlayerInfo\PlayerInfo.h"
 
 CEnemy::CEnemy(Mesh* modelMesh)
 	: GenericEntity(NULL)
@@ -32,7 +33,7 @@ void CEnemy::Init(void)
 	defaultUp.Set(0, 1, 0);
 	
 	// Set the current values
-	position.Set(10.0f, 0.0f, 0.0f);
+	//position.Set(10.0f, 0.0f, 0.0f);
 	target.Set(10.0f, 0.0f, 450.0f);
 	up.Set(0.0f, 1.0f, 0.0f);
 	
@@ -47,7 +48,7 @@ void CEnemy::Init(void)
 	health = 1;
 
 	// Initialise the LOD meshes
-	InitLOD("Body_Hi", "Body_Hi", "Body_Hi");
+	//InitLOD("Body_Hi", "Body_Hi", "Body_Hi");
 
 	// Initialise the Collider
 	this->SetCollider(true);
@@ -127,6 +128,7 @@ GroundEntity * CEnemy::GetTerrain(void)
 
 void CEnemy::Update(double dt)
 {
+	target = CPlayerInfo::GetInstance()->GetPos();
 	Vector3 viewVector = (target - position).Normalized();
 	position += viewVector * (float)m_dSpeed * (float)dt;
 

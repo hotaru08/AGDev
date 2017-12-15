@@ -44,6 +44,8 @@ void EntityManager::Update(double _dt)
 
 	// Check for Collision amongst entities with collider properties
 	CheckForCollision();
+	// Check for Collision amongst entities with collider properties (Enemy)
+	CheckForCollisionEnemy();
 
 	// Clean up entities that are done
 	it = entityList.begin();
@@ -583,6 +585,124 @@ bool EntityManager::CheckForCollision(void)
 
 // Check for collision for enemies
 bool EntityManager::CheckForCollisionEnemy(void)
+{
+	// Check for Collision
+	std::list<EntityBase*>::iterator colliderThis, colliderThisEnd;
+	std::list<EntityBase*>::iterator colliderThat, colliderThatEnd;
+
+	// Projectile - Enemy
+	std::list<EntityBase*>::iterator colliderThatProj, colliderThatEndProj;
+
+	// Scan thru Enemy List
+	colliderThisEnd = EnemyList.end();
+	for (colliderThis = EnemyList.begin(); colliderThis != colliderThisEnd; ++colliderThis)
+	{
+		//check if this entity is a CLaser type
+		if ((*colliderThis)->GetIsLaser())
+		{
+			//Dynamic cast it to a CLaser class
+			CLaser* thisEntity = dynamic_cast<CLaser*>(*colliderThis);
+
+			//check for collision with another collider class
+			colliderThatEnd = EnemyList.end();
+			int counter = 0;
+			for (colliderThat = EnemyList.begin(); colliderThat != colliderThatEnd; ++colliderThat)
+			{
+				// skip if same 
+				if (colliderThat == colliderThis)
+					continue;
+
+				if ((*colliderThat)->HasCollider())
+				{
+					Vector3 hitPosition = Vector3(0, 0, 0);
+
+					//Get the minAABB and maxAABB for (*colliderThat)
+					CCollider *thatCollider = dynamic_cast<CCollider*>(*colliderThat);
+					Vector3 thatMinAABB = (*colliderThat)->GetPosition() + thatCollider->GetMinAABB();
+					Vector3 thatMaxAABB = (*colliderThat)->GetPosition() + thatCollider->GetMaxAABB();
+
+					if (CheckLineSegmentPlane(thisEntity->GetPosition(),
+						thisEntity->GetPosition() - thisEntity->GetDirection() * thisEntity->GetLength(),
+						thatMinAABB, thatMaxAABB, hitPosition))
+					{
+						//(*colliderThis)->SetIsDone(true);
+						//(*colliderThat)->SetIsDone(true);
+
+						//// Remove from Scene Graph
+						//CSceneGraph::GetInstance()->DeleteNode(*colliderThis);
+						//CSceneGraph::GetInstance()->DeleteNode(*colliderThat);
+
+					}
+				}
+			}
+		}
+
+		// For Objects that have Collision
+		else if ((*colliderThis)->HasCollider())
+		{
+			// This object was derived from a CCollider class, then it will have Collision Detection methods
+			//CCollider *thisCollider = dynamic_cast<CCollider*>(*colliderThis);
+			EntityBase *thisEntity = dynamic_cast<EntityBase*>(*colliderThis);
+
+			// Check for collision with another collider class (between Enemy)
+			colliderThatEnd = EnemyList.end();
+			for (colliderThat = colliderThis; colliderThat != colliderThatEnd; ++colliderThat)
+			{
+				if (colliderThat == colliderThis)
+					continue;
+
+				if ((*colliderThat)->HasCollider())
+				{
+					// This object was derived from a CCollider class, then it will have Collision Detection methods
+					EntityBase *thatEntity = dynamic_cast<EntityBase*>(*colliderThat);
+					if (CheckSphereCollision(thisEntity, thatEntity))
+					{
+						if (CheckAABBCollision(thisEntity, thatEntity))
+						{
+							//thisEntity->SetIsDone(true);
+							//thatEntity->SetIsDone(true);
+
+							//// Remove from Scene Graph
+							//CSceneGraph::GetInstance()->DeleteNode(*colliderThis);
+							//CSceneGraph::GetInstance()->DeleteNode(*colliderThat);
+
+							//cout << "Collided" << endl;
+						}
+					}
+				}
+			}
+
+			// Check for collision with another collider class (between Projectile and Enemy)
+			colliderThatEndProj = projectileList.end();
+			for (colliderThatProj = projectileList.begin(); colliderThatProj != colliderThatEndProj; ++colliderThatProj)
+			{
+				/*if (colliderThat == colliderThis)
+					continue;*/
+
+				if ((*colliderThatProj)->HasCollider())
+				{
+					// This object was derived from a CCollider class, then it will have Collision Detection methods
+					EntityBase *thatEntity = dynamic_cast<EntityBase*>(*colliderThatProj);
+					if (CheckSphereCollision(thisEntity, thatEntity))
+					{
+						if (CheckAABBCollision(thisEntity, thatEntity))
+						{
+							thisEntity->SetIsDone(true);
+							thatEntity->SetIsDone(true);
+
+							//// Remove from Scene Graph
+							CSceneGraph::GetInstance()->DeleteNode(*colliderThis);//main body of enemy
+							CSceneGraph::GetInstance()->DeleteNode(*colliderThatProj);//proj
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool EntityManager::CheckForCollisionProjectile(void)
 {
 	return false;
 }

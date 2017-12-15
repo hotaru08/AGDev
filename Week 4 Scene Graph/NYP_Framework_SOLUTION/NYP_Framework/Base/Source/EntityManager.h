@@ -49,11 +49,13 @@ private:
 	bool CheckSphereCollision(EntityBase *ThisEntity, EntityBase *ThatEntity);
 	// Check if this entity collided with another entity, but both must have collider
 	bool CheckAABBCollision(EntityBase *ThisEntity, EntityBase *ThatEntity);
+
 	// Check if any Collider is colliding with another Collider
 	bool CheckForCollision(void);
 	// Check if any Collider is colliding with another Collider (Enemy)
 	bool CheckForCollisionEnemy(void);
-
+	// Check if any Collider is colliding with another Collider (Projectile)
+	bool CheckForCollisionProjectile(void);
 
 	// check for intersection between a line segment and a plane
 	bool GetIntersection(const float fDst1, const float fDst2, Vector3 P1, Vector3 P2, Vector3 &Hit);

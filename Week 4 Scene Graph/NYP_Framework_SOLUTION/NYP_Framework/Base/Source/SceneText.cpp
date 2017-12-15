@@ -170,10 +170,10 @@ void SceneText::Init()
 	MeshBuilder::GetInstance()->GetMesh("Head_Hi")->textureID = LoadTGA("Image//Assignment1//Zombie.tga");
 	MeshBuilder::GetInstance()->GetMesh("RightArm_Hi")->textureID = LoadTGA("Image//Assignment1//ZombieArms.tga");
 	MeshBuilder::GetInstance()->GetMesh("LeftArm_Hi")->textureID = LoadTGA("Image//Assignment1//ZombieArms.tga");
-	MeshBuilder::GetInstance()->GetMesh("LeftLeg_Hi")->textureID = LoadTGA("Image//Assignment1//Zombie.tga");
-	MeshBuilder::GetInstance()->GetMesh("RightLeg_Hi")->textureID = LoadTGA("Image//Assignment1//Zombie.tga");
+	MeshBuilder::GetInstance()->GetMesh("LeftLeg_Hi")->textureID = LoadTGA("Image//Assignment1//ZombieBody.tga");
+	MeshBuilder::GetInstance()->GetMesh("RightLeg_Hi")->textureID = LoadTGA("Image//Assignment1//ZombieBody.tga");
 
-	// tree
+	// ------------------------------------------------- Tree
 	MeshBuilder::GetInstance()->GenerateOBJ("Tree_Hi", "OBJ//tree//Tree.obj");
 	MeshBuilder::GetInstance()->GetMesh("Tree_Hi")->textureID = LoadTGA("Image//Assignment1//Tree_Hi.tga");
 	MeshBuilder::GetInstance()->GenerateOBJ("Tree_Med", "OBJ//tree//Tree_med.obj");
@@ -181,7 +181,7 @@ void SceneText::Init()
 	MeshBuilder::GetInstance()->GenerateOBJ("Tree_Lo", "OBJ//tree//Tree_lo.obj");
 	MeshBuilder::GetInstance()->GetMesh("Tree_Lo")->textureID = LoadTGA("Image//Assignment1//Tree_Lo.tga");
 
-	// tombstone
+	// ------------------------------------------------- Tombstone
 	MeshBuilder::GetInstance()->GenerateOBJ("TombStone_Hi", "OBJ//tombstone//tombstone.obj");
 	MeshBuilder::GetInstance()->GetMesh("TombStone_Hi")->textureID = LoadTGA("Image//Assignment1//TombStone_Hi.tga");
 	MeshBuilder::GetInstance()->GenerateOBJ("TombStone_Med", "OBJ//tombstone//tombstone_med.obj");
@@ -189,13 +189,28 @@ void SceneText::Init()
 	MeshBuilder::GetInstance()->GenerateOBJ("TombStone_Lo", "OBJ//tombstone//tombstone_lo.obj");
 	MeshBuilder::GetInstance()->GetMesh("TombStone_Lo")->textureID = LoadTGA("Image//Assignment1//TombStone_Lo.tga");
 
-	// house
+	// ------------------------------------------------- House
 	MeshBuilder::GetInstance()->GenerateOBJ("House_Hi", "OBJ//house//house.obj");
 	MeshBuilder::GetInstance()->GetMesh("House_Hi")->textureID = LoadTGA("Image//Assignment1//House_Hi.tga");
 	MeshBuilder::GetInstance()->GenerateOBJ("House_Med", "OBJ//house//house_med.obj");
 	MeshBuilder::GetInstance()->GetMesh("House_Med")->textureID = LoadTGA("Image//Assignment1//House_Med.tga");
 	MeshBuilder::GetInstance()->GenerateOBJ("House_Lo", "OBJ//house//house_lo.obj");
 	MeshBuilder::GetInstance()->GetMesh("House_Lo")->textureID = LoadTGA("Image//Assignment1//House_Lo.tga");
+
+	// ------------------------------------------------- Turret
+	MeshBuilder::GetInstance()->GenerateOBJ("Turret_Top", "OBJ//Turret//Turret_Top.obj");
+	MeshBuilder::GetInstance()->GetMesh("Turret_Top")->textureID = LoadTGA("Image//Assignment1//Turret.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("Turret_Top_Mid", "OBJ//Turret//Turret_Top_Mid.obj");
+	MeshBuilder::GetInstance()->GetMesh("Turret_Top_Mid")->textureID = LoadTGA("Image//Assignment1//Turret.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("Turret_Top_Lo", "OBJ//Turret//Turret_Top_Lo.obj");
+	MeshBuilder::GetInstance()->GetMesh("Turret_Top_Lo")->textureID = LoadTGA("Image//Assignment1//Turret.tga");
+
+	/*MeshBuilder::GetInstance()->GenerateOBJ("Turret_Bottom", "OBJ//Turret//Turret_Top.obj");
+	MeshBuilder::GetInstance()->GetMesh("Turret_Top")->textureID = LoadTGA("Image//Assignment1//Turret.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("Turret_Top_Mid", "OBJ//Turret//Turret_Top_Mid.obj");
+	MeshBuilder::GetInstance()->GetMesh("Turret_Top_Mid")->textureID = LoadTGA("Image//Assignment1//Turret.tga");
+	MeshBuilder::GetInstance()->GenerateOBJ("Turret_Top_Lo", "OBJ//Turret//Turret_Top_Lo.obj");
+	MeshBuilder::GetInstance()->GetMesh("Turret_Top_Lo")->textureID = LoadTGA("Image//Assignment1//Turret.tga");*/
 
 	// ------------------------------------------------- Spatial Partitioning ------------------------------------------------- //
 	MeshBuilder::GetInstance()->GenerateQuad("GRIDMESH", Color(1.f, 1.f, 1.f), 10.f);
@@ -209,41 +224,44 @@ void SceneText::Init()
 	Create::Entity("reference", Vector3(0.0f, 0.0f, 0.0f)); // Reference
 	Create::Entity("lightball", Vector3(lights[0]->position.x, lights[0]->position.y, lights[0]->position.z));
 
+	// ------------------------------------------------- File Manager ------------------------------------------------- //
 	FileManager::GetInstance()->init();
 	FileManager::GetInstance()->ReadMapFile("Files//Scene.csv");
 
 	// ------------------------------------------------- Scene Graph ------------------------------------------------- //
-	CEnemy* ZombieBody = Create::Enemy("Body_Hi", Vector3(10.0f, 10.f, 10.0f));
+	CEnemy* ZombieBody = Create::Enemy("Body_Hi", Vector3(0.0f, 0.f, 0.0f), Vector3(1.0f, 1.f, 1.0f), 3);
 	ZombieBody->Init();
-	ZombieBody->SetCollider(true);
+	//ZombieBody->SetCollider(true);
+	//ZombieBody->SetAABB(Vector3(1.f, 1.f, 1.f), Vector3(-1.f, -1.f, -1.f));
 	CSceneNode* baseNode = CSceneGraph::GetInstance()->AddNode(ZombieBody);
 
 	// Translate the node
-	CUpdateTransformation* baseMtx = new CUpdateTransformation();
+	/*CUpdateTransformation* baseMtx = new CUpdateTransformation();
 	baseMtx->ApplyUpdate(0.01f, 0.0f, 0.0f);
 	baseMtx->SetSteps(-30, 30);
-	baseNode->SetUpdateTransformation(baseMtx);
+	baseNode->SetUpdateTransformation(baseMtx);*/
 
 	// Child
 	// |
 	// Base 
-	GenericEntity* ZombieHead = Create::Entity("Head_Hi", Vector3(0.0f, 0.0f, 0.0f));
+	CEnemy* ZombieHead = Create::Enemy("Head_Hi", Vector3(0.f,0.f,0.f));
+	ZombieHead->Init();
 	//ZombieHead->SetCollider(true);
 	//ZombieHead->SetAABB(Vector3(1.f, 1.f, 1.f), Vector3(-1.f, -1.f, -1.f));
 	CSceneNode* ZombieHeadNode = baseNode->AddChild(ZombieHead);
-	//childNode->ApplyTranslate(0.0f, 1.0f, 0.0f);
+	//ZombieHeadNode->ApplyTranslate(0.0f, 1.0f, 0.0f);
 
 	// Child
 	// |
 	// Base -> Child
-	GenericEntity* ZombieRightArm = Create::Entity("RightArm_Hi", Vector3(0.0f, 0.0f, 0.0f));
+	CEnemy* ZombieRightArm = Create::Enemy("RightArm_Hi", Vector3(0.0f, 0.0f, 0.0f));
 	CSceneNode* ZombieRightArmNode = baseNode->AddChild(ZombieRightArm);
 	//grandchildNode->ApplyTranslate(0.0f, 0.0f, 1.0f);
 
 	//         Child
 	//           |
 	// Child <- Base -> Child
-	GenericEntity* ZombieLeftArm = Create::Entity("LeftArm_Hi", Vector3(0.0f, 0.0f, 0.0f));
+	CEnemy* ZombieLeftArm = Create::Enemy("LeftArm_Hi", Vector3(0.0f, 0.0f, 0.0f));
 	CSceneNode* ZombieLeftArmNode = baseNode->AddChild(ZombieLeftArm);
 
 	//         Child
@@ -251,7 +269,7 @@ void SceneText::Init()
 	// Child <- Base -> Child
 	//			|
 	//		  Child
-	GenericEntity* ZombieRightLeg = Create::Entity("RightLeg_Hi", Vector3(0.0f, 0.0f, 0.0f));
+	CEnemy* ZombieRightLeg = Create::Enemy("RightLeg_Hi", Vector3(0.0f, 0.0f, 0.0f));
 	CSceneNode* ZombieRightLegNode = baseNode->AddChild(ZombieRightLeg);
 
 	//         Child
@@ -259,7 +277,7 @@ void SceneText::Init()
 	// Child <- Base -> Child
 	//		|	 	 |
 	//	  Child		Child
-	GenericEntity* ZombieLeftLeg = Create::Entity("LeftLeg_Hi", Vector3(0.0f, 0.0f, 0.0f));
+	CEnemy* ZombieLeftLeg = Create::Enemy("LeftLeg_Hi", Vector3(0.0f, 0.0f, 0.0f));
 	CSceneNode* ZombieLeftLegNode = baseNode->AddChild(ZombieLeftLeg);
 
 	// Rotate the node
