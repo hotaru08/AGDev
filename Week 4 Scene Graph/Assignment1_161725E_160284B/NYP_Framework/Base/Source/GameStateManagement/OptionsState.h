@@ -8,15 +8,14 @@
 #include "../SpriteEntity.h"
 
 class SceneManager;
-class CMenuState : public Scene
+class COptionState : public Scene
 {
 	FPSCamera camera;
-	SpriteEntity* MenuStateBackground;
-	int NumCase;
+	SpriteEntity* OptionStateBackground;
 
 public:
-	CMenuState();
-	~CMenuState();
+	COptionState();
+	~COptionState();
 
 	virtual void Init();
 	virtual void Update(double dt);

@@ -17,6 +17,8 @@
 #include "SceneText.h"
 #include "GameStateManagement\IntroState.h"
 #include "GameStateManagement\MenuState.h"
+#include "GameStateManagement\LoadingState.h"
+#include "GameStateManagement\OptionsState.h"
 
 #include "lua\CLuaInterface.h"
 
@@ -128,6 +130,8 @@ void Application::Init()
 	// Create the Game States
 	SceneManager::GetInstance()->AddScene("IntroState", new CIntroState());
 	SceneManager::GetInstance()->AddScene("MenuState", new CMenuState());
+	SceneManager::GetInstance()->AddScene("LoadingState", new CLoadingState());
+	SceneManager::GetInstance()->AddScene("OptionState", new COptionState());
 	SceneManager::GetInstance()->AddScene("GameState", new SceneText());
 
 	// Set the active scene

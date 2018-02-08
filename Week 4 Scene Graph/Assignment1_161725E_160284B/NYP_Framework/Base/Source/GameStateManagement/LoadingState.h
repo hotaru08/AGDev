@@ -8,15 +8,16 @@
 #include "../SpriteEntity.h"
 
 class SceneManager;
-class CMenuState : public Scene
+class CLoadingState : public Scene
 {
 	FPSCamera camera;
-	SpriteEntity* MenuStateBackground;
-	int NumCase;
+	SpriteEntity* LoadingStateBackground;
+	float timer;
+	float moveUp;
 
 public:
-	CMenuState();
-	~CMenuState();
+	CLoadingState();
+	~CLoadingState();
 
 	virtual void Init();
 	virtual void Update(double dt);
