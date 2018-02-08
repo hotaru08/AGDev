@@ -49,6 +49,8 @@ public:
 	// Pointer to the Lua States
 	lua_State *theLuaState;
 	lua_State *theScreenState; /// For resolution
+	lua_State *thePlayerState; /// For Player info
+	lua_State *theEnemyState; /// For Enemy
 	lua_State *theErrorState;
 
 	// Getting and setting Values 
@@ -62,7 +64,7 @@ public:
 	float getFloatValue(const char* _name);
 
 	// get a char value through the lua interface class
-	char getCharValue(const char* varName);
+	char getCharValue(const char* varName, int _type);
 
 	// get Vector3 values through the Lua Interface class
 	Vector3 getVector3values(const char* varName);

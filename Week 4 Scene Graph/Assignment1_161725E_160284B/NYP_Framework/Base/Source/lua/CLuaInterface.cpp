@@ -47,6 +47,31 @@ bool CLuaInterface::Init()
 		result = true;
 	}
 
+	// For Player
+	thePlayerState = lua_open();
+	if (thePlayerState)
+	{
+		// 2. load lua auxiliary libraries
+		luaL_openlibs(thePlayerState);
+
+		// 3. load lua script
+		luaL_dofile(thePlayerState, "Image//DM2240_Player.lua");
+
+		result = true;
+	}
+
+	// For Enemy
+	theEnemyState = lua_open();
+	if (theEnemyState)
+	{
+		// 2. load lua auxiliary libraries
+		luaL_openlibs(theEnemyState);
+
+		// 3. load lua script
+		luaL_dofile(theEnemyState, "Image//DM2240_Enemy.lua");
+		result = true;
+	}
+
 	// For Error
 	theErrorState = lua_open();
 	if ((theLuaState) && (theErrorState))
@@ -64,7 +89,7 @@ bool CLuaInterface::Init()
 // Run the lua interface class
 void CLuaInterface::Run()
 {
-	if (theLuaState == NULL || theScreenState == NULL)
+	if (theScreenState == NULL)
 		return;
 
 	// 4. Read the variables
@@ -117,7 +142,7 @@ void CLuaInterface::saveFloatValue(const char * _name, int _value, int _type, co
 	
 	//// Print values
 	char outputString[80];
-	sprintf(outputString, "%s = %f\n", _name, _value);
+	sprintf(outputString, "%s = %6.4f\n", _name, _value);
 	lua_pushstring(theLuaState, outputString);
 	lua_pushinteger(theLuaState, bOverwrite);
 	lua_pushinteger(theLuaState, _type);
@@ -137,6 +162,10 @@ int CLuaInterface::getIntValue(const char * _name, int _type)
 		lua_getglobal(theScreenState, _name);
 		return lua_tointeger(theScreenState, -1);
 		break;
+	case 3: /// For Player 
+		lua_getglobal(thePlayerState, _name);
+		return lua_tointeger(thePlayerState, -1);
+		break;
 	default:
 		break;
 	}
@@ -145,17 +174,26 @@ int CLuaInterface::getIntValue(const char * _name, int _type)
 float CLuaInterface::getFloatValue(const char * _name)
 {
 	lua_getglobal(theLuaState, _name);
-	return (float)lua_tointeger(theLuaState, -1);
+	return static_cast<float>(lua_tointeger(theLuaState, -1));
 }
 
-char CLuaInterface::getCharValue(const char * varName)
+char CLuaInterface::getCharValue(const char * varName, int _type)
 {
-	lua_getglobal(theLuaState, varName);
+	size_t len = 0;
+	const char* cstr;
 
-	size_t len;
+	switch (_type)
+	{
+	case 1: /// Main Lua File
+		lua_getglobal(theLuaState, varName);
+		cstr = lua_tolstring(theLuaState, -1, &len);
+		break;
+	case 2: /// For Player 
+		lua_getglobal(thePlayerState, varName);
+		cstr = lua_tolstring(thePlayerState, -1, &len);
+		break;
+	}
 	
-	const char* cstr = lua_tolstring(theLuaState, -1, &len);
-
 	// if the string is not empty, then return the first char
 	if (len > 0)
 		return cstr[0];
@@ -168,18 +206,18 @@ char CLuaInterface::getCharValue(const char * varName)
 Vector3 CLuaInterface::getVector3values(const char * varName)
 {
 	// Get the stack
-	lua_getglobal(theLuaState, varName);
-	lua_rawgeti(theLuaState, -1, 1); // get the first value in the stack
-	int x = lua_tonumber(theLuaState, -1);
-	lua_pop(theLuaState, 1);
+	lua_getglobal(thePlayerState, varName);
+	lua_rawgeti(thePlayerState, -1, 1); // get the first value in the stack
+	int x = lua_tonumber(thePlayerState, -1);
+	lua_pop(thePlayerState, 1);
 
-	lua_rawgeti(theLuaState, -1, 2);// get the second value 
-	int y = lua_tonumber(theLuaState, -1);
-	lua_pop(theLuaState, 1);
+	lua_rawgeti(thePlayerState, -1, 2);// get the second value 
+	int y = lua_tonumber(thePlayerState, -1);
+	lua_pop(thePlayerState, 1);
 
-	lua_rawgeti(theLuaState, -1, 3);
-	int z = lua_tonumber(theLuaState, -1);
-	lua_pop(theLuaState, 1);
+	lua_rawgeti(thePlayerState, -1, 3);
+	int z = lua_tonumber(thePlayerState, -1);
+	lua_pop(thePlayerState, 1);
 
 	return Vector3(x,y,z);
 }
@@ -225,10 +263,10 @@ int CLuaInterface::getVariableValues(const char * varName, int & a, int & b, int
 float CLuaInterface::GetField(const char * key)
 {
 	int result = false;
-	lua_pushstring(theLuaState, key);
-	lua_gettable(theLuaState, -2);
-	result = (int)lua_tonumber(theLuaState, -1);
-	lua_pop(theLuaState, 1);
+	lua_pushstring(theEnemyState, key);
+	lua_gettable(theEnemyState, -2);
+	result = (int)lua_tonumber(theEnemyState, -1);
+	lua_pop(theEnemyState, 1); // remove number
 	return result;
 }
 
