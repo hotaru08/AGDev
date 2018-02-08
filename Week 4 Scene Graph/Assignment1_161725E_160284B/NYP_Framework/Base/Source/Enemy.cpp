@@ -4,7 +4,7 @@
 #include "RenderHelper.h"
 #include "MeshBuilder.h"
 #include "PlayerInfo\PlayerInfo.h"
-
+#include "Waypoint\WaypointManager.h"
 #include "CSceneNode.h"
 
 CEnemy::CEnemy(Mesh* modelMesh)
@@ -18,8 +18,10 @@ CEnemy::CEnemy(Mesh* modelMesh)
 	, minBoundary(Vector3(0.0f, 0.0f, 0.0f))
 	, health(0)
 	, m_pTerrain(NULL)
+	, m_iWayPointIndex(-1)
 {
 	this->modelMesh = modelMesh;
+	listOfWaypoints.clear();
 }
 
 CEnemy::~CEnemy()
@@ -58,6 +60,21 @@ void CEnemy::Init(void)
 
 	// Set angle 
 	angle = 0;
+
+	// Set up the waypoints
+	listOfWaypoints.push_back(0);
+	listOfWaypoints.push_back(1);
+	listOfWaypoints.push_back(2);
+
+	m_iWayPointIndex = 0;
+
+	CWaypoint* nextWaypoint = GetNextWaypoint();
+	if (nextWaypoint)
+		target = nextWaypoint->GetPosition();
+	else
+		target = Vector3(0, 0, 0);
+	cout << "Next target: " << target << endl;
+	up.Set(0.0f, 1.0f, 0.0f);
 }
 
 void CEnemy::Reset(void)
@@ -160,6 +177,16 @@ void CEnemy::Update(double dt)
 	{
 		direction = -1;
 	}
+
+	if ((target - position).LengthSquared() < 25.0f)
+	{
+		CWaypoint* nextWaypoint = GetNextWaypoint();
+		if (nextWaypoint)
+			target = nextWaypoint->GetPosition();
+		else
+			target = Vector3(0, 0, 0);
+		cout << "Next target: " << target << endl;
+	}
 }
 
 void CEnemy::Constrain(void)
@@ -230,4 +257,18 @@ CEnemy * Create::Enemy(const std::string & _meshName, const Vector3 & _position,
 	result->SetCollider(false);
 	EntityManager::GetInstance()->AddEnemy(result, true);
 	return result;
+}
+
+// Get next Waypoint for this CEnemy
+CWaypoint* CEnemy::GetNextWaypoint(void)
+{
+	if ((int)listOfWaypoints.size() > 0)
+	{
+		m_iWayPointIndex++;
+		if (m_iWayPointIndex >= (int)listOfWaypoints.size())
+			m_iWayPointIndex = 0;
+		return CWaypointManager::GetInstance()->GetWaypoint(listOfWaypoints[m_iWayPointIndex]);
+	}
+	else
+		return NULL;
 }

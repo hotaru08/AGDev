@@ -1,12 +1,23 @@
 #pragma once
 #include "GenericEntity.h"
 #include "GroundEntity.h"
+#include <vector>
+#include "Waypoint\Waypoint.h"
+
+using std::vector;
 
 class Mesh;
 
 class CEnemy : public GenericEntity
 {
 protected:
+	enum State
+	{
+		STATE_MOVE,
+		STATE_CHASE,
+		STATE_RUN,
+	};
+	State currentState;
 	Vector3 defaultPosition, defaultTarget, defaultUp;
 	Vector3 target, up;
 	Vector3 maxBoundary, minBoundary;
@@ -16,6 +27,11 @@ protected:
 	double m_dAcceleration;
 	int health;
 	float angle;
+
+	// Vector containing IDs of Waypoints
+	vector<int> listOfWaypoints;
+	// Current ID of Waypoint
+	int m_iWayPointIndex;
 
 private:
 	// Meshes
@@ -53,6 +69,8 @@ public:
 	Vector3 GetUp(void) const;
 	// get the terrain for the enemy
 	GroundEntity* GetTerrain(void);
+	// Get next Waypoint for this CEnemy
+	CWaypoint* GetNextWaypoint(void);
 
 	// update
 	void Update(double dt = 0.0333f);
