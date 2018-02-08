@@ -43,7 +43,7 @@ void COptionState::Init()
 
 	MeshBuilder::GetInstance()->GenerateText("text2", 16, 16);
 	MeshBuilder::GetInstance()->GetMesh("text2")->textureID = LoadTGA("Image//calibri.tga");
-	MeshBuilder::GetInstance()->GetMesh("text2")->material.kAmbient.Set(1, 0, 0);
+	//MeshBuilder::GetInstance()->GetMesh("text2")->material.kAmbient.Set(1, 0, 0);
 	cout << "COptionState loaded\n" << endl;
 
 	NumCase = 0;
