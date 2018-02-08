@@ -1,0 +1,11 @@
+Things to be done:
+- States
+  -> Splash Screen
+  -> Menu Screen
+  -> Loading Screen
+  -> Game Screen
+  -> Pause Screen
+  -> Exit Screen
+
+- AI
+  -> 
