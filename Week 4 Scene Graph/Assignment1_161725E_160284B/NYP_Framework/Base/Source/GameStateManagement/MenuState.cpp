@@ -30,6 +30,8 @@ void CMenuState::Init()
 	GraphicsManager::GetInstance()->AttachCamera(&camera);
 
 	// Load all the meshes
+	MeshBuilder::GetInstance()->GenerateQuad("Red", Color(0.3, 0, 0), 1.f);
+
 	MeshBuilder::GetInstance()->GenerateQuad("MENUSTATE_BKGROUND", Color(1, 1, 1), 1.f);
 	MeshBuilder::GetInstance()->GetMesh("MENUSTATE_BKGROUND")->textureID = LoadTGA("Image//MenuState.tga");
 
@@ -70,6 +72,11 @@ void CMenuState::Update(double dt)
 		cout << "Loading LoadingState" << endl;
 		SceneManager::GetInstance()->SetActiveScene("LoadingState");
 	}
+	else if (NumCase == 1 && KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
+	{
+		cout << "Loading OptionsState" << endl;
+		SceneManager::GetInstance()->SetActiveScene("OptionState");
+	}
 }
 
 void CMenuState::Render()
@@ -94,6 +101,13 @@ void CMenuState::Render()
 
 	// render the required entities
 	EntityManager::GetInstance()->RenderUI();
+
+	MS& modelStack = GraphicsManager::GetInstance()->GetModelStack();
+	modelStack.PushMatrix();
+	modelStack.Translate(Application::GetInstance().GetWindowWidth() * 0.5 - 30, Application::GetInstance().GetWindowHeight() * 0.5 - (NumCase * 70), 10);
+	modelStack.Scale(50, 7.5, 1);
+	RenderHelper::RenderMesh(MeshBuilder::GetInstance()->GetMesh("Red"));
+	modelStack.PopMatrix();
 }
 
 void CMenuState::Exit()

@@ -12,6 +12,9 @@ class COptionState : public Scene
 {
 	FPSCamera camera;
 	SpriteEntity* OptionStateBackground;
+	int NumCase;
+	int adjustReso;
+	int adjustMouse;
 
 public:
 	COptionState();
