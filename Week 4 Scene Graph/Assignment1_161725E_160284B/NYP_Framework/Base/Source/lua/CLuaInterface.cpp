@@ -20,9 +20,9 @@ bool CLuaInterface::Init()
 {
 	bool result = false;
 
-	// 1. create lua state
+	/* Creation of States and setting Files to States */
+	// For main file
 	theLuaState = lua_open();
-
 	if (theLuaState)
 	{
 		// 2. load lua auxiliary libraries
@@ -34,8 +34,21 @@ bool CLuaInterface::Init()
 		result = true;
 	}
 
-	theErrorState = lua_open();
+	// For resolution
+	theScreenState = lua_open();
+	if (theScreenState)
+	{
+		// 2. load lua auxiliary libraries
+		luaL_openlibs(theScreenState);
 
+		// 3. load lua script
+		luaL_dofile(theScreenState, "Image//DM2240_Resolution.lua");
+
+		result = true;
+	}
+
+	// For Error
+	theErrorState = lua_open();
 	if ((theLuaState) && (theErrorState))
 	{
 		// 2. Load lua auxiliary libraries
@@ -51,20 +64,20 @@ bool CLuaInterface::Init()
 // Run the lua interface class
 void CLuaInterface::Run()
 {
-	if (theLuaState == NULL)
+	if (theLuaState == NULL || theScreenState == NULL)
 		return;
 
 	// 4. Read the variables
 	// lua_getglobal(lua_State*, const char*)
-	lua_getglobal(theLuaState, "title");
+	lua_getglobal(theScreenState, "title");
 	// extract value, index -1 as variable is already retrieved using lua_getglobal
-	const char *title = lua_tostring(theLuaState, -1);
+	const char *title = lua_tostring(theScreenState, -1);
 
-	lua_getglobal(theLuaState, "width");
-	int width = lua_tointeger(theLuaState, -1);
+	lua_getglobal(theScreenState, "width");
+	int width = lua_tointeger(theScreenState, -1);
 
-	lua_getglobal(theLuaState, "height");
-	int height = lua_tointeger(theLuaState, -1);
+	lua_getglobal(theScreenState, "height");
+	int height = lua_tointeger(theScreenState, -1);
 
 	// Display on screen
 	cout << title << endl;
@@ -83,21 +96,21 @@ void CLuaInterface::Drop()
 }
 
 // Setting to lua file
-void CLuaInterface::saveIntValue(const char * _name, int _value, const bool bOverwrite)
+void CLuaInterface::saveIntValue(const char * _name, int _value, int _type, const bool bOverwrite)
 {
 	// read value of Lua variable
 	lua_getglobal(theLuaState, "SaveToLuaFile");
 
-	//// Print values
+	// Print values
 	char outputString[80];
 	sprintf(outputString, "%s = %d\n", _name, _value);
 	lua_pushstring(theLuaState, outputString);
 	lua_pushinteger(theLuaState, bOverwrite);
-	lua_call(theLuaState, 2, 0); 
-	cout << "....................\n";
+	lua_pushinteger(theLuaState, _type);
+	lua_call(theLuaState, 3, 0); 
 }
 
-void CLuaInterface::saveFloatValue(const char * _name, int _value, const bool bOverwrite)
+void CLuaInterface::saveFloatValue(const char * _name, int _value, int _type, const bool bOverwrite)
 {
 	// read value of Lua variable
 	lua_getglobal(theLuaState, "SaveToLuaFile");
@@ -107,14 +120,26 @@ void CLuaInterface::saveFloatValue(const char * _name, int _value, const bool bO
 	sprintf(outputString, "%s = %f\n", _name, _value);
 	lua_pushstring(theLuaState, outputString);
 	lua_pushinteger(theLuaState, bOverwrite);
-	lua_call(theLuaState, 2, 0);
+	lua_pushinteger(theLuaState, _type);
+	lua_call(theLuaState, 3, 0);
 }
 
 // Getting from lua files
-int CLuaInterface::getIntValue(const char * _name)
+int CLuaInterface::getIntValue(const char * _name, int _type)
 { 
-	lua_getglobal(theLuaState, _name);
-	return lua_tointeger(theLuaState, -1);
+	switch (_type)
+	{
+	case 1: /// For main file
+		lua_getglobal(theLuaState, _name);
+		return lua_tointeger(theLuaState, -1);
+		break;
+	case 2: /// For Resolution
+		lua_getglobal(theScreenState, _name);
+		return lua_tointeger(theScreenState, -1);
+		break;
+	default:
+		break;
+	}
 }
 
 float CLuaInterface::getFloatValue(const char * _name)

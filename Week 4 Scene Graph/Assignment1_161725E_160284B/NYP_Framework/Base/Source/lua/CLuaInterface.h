@@ -45,16 +45,18 @@ public:
 	void Run();
 	// Drop the Lua Interface Class
 	void Drop();
-	// Pointer to the Lua State
+
+	// Pointer to the Lua States
 	lua_State *theLuaState;
+	lua_State *theScreenState; /// For resolution
 	lua_State *theErrorState;
 
 	// Getting and setting Values 
-	void saveIntValue(const char* _name, int _value, const bool bOverwrite = NULL);
-	void saveFloatValue(const char* _name, int _value, const bool bOverwrite = NULL);
+	void saveIntValue(const char* _name, int _value, int _type, const bool bOverwrite = NULL);
+	void saveFloatValue(const char* _name, int _value, int _type, const bool bOverwrite = NULL);
 
 	// get a int value through the lua interface class
-	int getIntValue(const char* _name);
+	int getIntValue(const char* _name, int _type);
 
 	// get a float value through the lua interface class
 	float getFloatValue(const char* _name);
