@@ -26,6 +26,7 @@
 #include "MapEditor\MapEditor.h"
 #include "FileManager\FileManager.h"
 #include "Waypoint\WaypointManager.h"
+#include "Lua/CLuaInterface.h"
 
 #include <iostream>
 using namespace std;
@@ -374,13 +375,18 @@ void SceneText::Init()
 		textObj[i] = Create::Text2DObject("text", Vector3(-halfWindowWidth, -halfWindowHeight + fontSize*i + halfFontSize, 0.0f), "", Vector3(fontSize, fontSize, fontSize), Color(0.0f, 1.0f, 0.0f));
 	}
 	textObj[0]->SetText("HELLO WORLD");
+
+	// Highscore
+	m_dTimer = 0.0;
+	m_iCurrScore = CLuaInterface::GetInstance()->getIntValue("CurrScore", 1);
+	m_iHighScore = CLuaInterface::GetInstance()->getIntValue("Highscore", 1);
 }
 
 void SceneText::Update(double dt)
 {
 	// Update our entities
 	EntityManager::GetInstance()->Update(dt);
-
+	
 	/*Map Editor*/
 	if (KeyboardController::GetInstance()->IsKeyPressed(VK_NUMPAD2))
 		MapEditor::GetInstance()->mapEditing = true;
@@ -460,8 +466,25 @@ void SceneText::Update(double dt)
 	playerInfo->Update(dt);
 
 	//camera.Update(dt); // Can put the camera into an entity rather than here (Then we don't have to write this)
-
+	// Updates the light 
 	GraphicsManager::GetInstance()->UpdateLights(dt);
+
+	// Updates the Highscore / CurrScore
+	m_dTimer += static_cast<float>(dt);
+	if (m_dTimer > 10.f)
+	{
+		// Add 10pts every 10s stay alive/ remain in game
+		m_iCurrScore += 10;
+		CLuaInterface::GetInstance()->saveIntValue("CurrScore", m_iCurrScore, 1, true);
+
+		// Highscore - When higher then previous highscore, replace the values
+		if (m_iHighScore < m_iCurrScore)
+			CLuaInterface::GetInstance()->saveIntValue("Highscore", m_iCurrScore, 1);
+		else
+			CLuaInterface::GetInstance()->saveIntValue("Highscore", m_iHighScore, 1);
+
+		m_dTimer = 0.f;
+	}
 
 	// Update the 2 text object values. NOTE: Can do this in their own class but i'm lazy to do it now :P
 	// Eg. FPSRenderEntity or inside RenderUI for LightEntity
@@ -471,15 +494,28 @@ void SceneText::Update(double dt)
 	ss << "FPS: " << fps;
 	textObj[1]->SetText(ss.str());
 
-	std::ostringstream ss1;
-	ss1.precision(4);
-	ss1 << "Player:" << playerInfo->GetPos();
-	textObj[2]->SetText(ss1.str());
+	ss.str("");
+	ss.precision(4);
+	ss << "Player:" << playerInfo->GetPos();
+	textObj[2]->SetText(ss.str());
 
-	std::ostringstream ss2;
-	ss2.precision(2);
-	ss2 << "Entities in Grid: " << CSpatialPartition::GetInstance()->GetObjectsSize();
-	textObj[3]->SetText(ss2.str());
+	ss.str("");
+	ss.precision(2);
+	ss << "Entities in Grid: " << CSpatialPartition::GetInstance()->GetObjectsSize();
+	textObj[3]->SetText(ss.str());
+
+	// Highscore
+	ss.str("");
+	ss << "Current Score: " << m_iCurrScore;
+	textObj[4]->SetText(ss.str());
+
+	ss.str("");
+	if (m_iHighScore > m_iCurrScore)
+		ss << "HighScore: " << m_iHighScore;
+	else
+		ss << "HighScore: " << m_iCurrScore;
+
+	textObj[5]->SetText(ss.str());
 }
 
 void SceneText::Render()
@@ -524,4 +560,7 @@ void SceneText::Exit()
 	// Delete the lights
 	delete lights[0];
 	delete lights[1];
+
+	// Reset Highscore
+	//CLuaInterface::GetInstance()->saveIntValue("CurrScore", m_iCurrScore, 1, true);
 }

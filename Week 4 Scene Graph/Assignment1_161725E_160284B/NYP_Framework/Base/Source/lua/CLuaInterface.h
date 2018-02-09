@@ -48,6 +48,7 @@ public:
 
 	// Pointer to the Lua States
 	lua_State *theLuaState;
+	lua_State *theHighscoreState; /// for highscore
 	lua_State *theScreenState; /// For resolution
 	lua_State *thePlayerState; /// For Player info
 	lua_State *theEnemyState; /// For Enemy

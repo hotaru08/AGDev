@@ -34,6 +34,19 @@ bool CLuaInterface::Init()
 		result = true;
 	}
 
+	// For Highscore
+	theHighscoreState = lua_open();
+	if (theHighscoreState)
+	{
+		// 2. load lua auxiliary libraries
+		luaL_openlibs(theHighscoreState);
+
+		// 3. load lua script
+		luaL_dofile(theHighscoreState, "Image//DM2240_HighScore.lua");
+
+		result = true;
+	}
+
 	// For resolution
 	theScreenState = lua_open();
 	if (theScreenState)
@@ -167,8 +180,8 @@ int CLuaInterface::getIntValue(const char * _name, int _type)
 	switch (_type)
 	{
 	case 1: /// For main file
-		lua_getglobal(theLuaState, _name);
-		return lua_tointeger(theLuaState, -1);
+		lua_getglobal(theHighscoreState, _name);
+		return lua_tointeger(theHighscoreState, -1);
 		break;
 	case 2: /// For Resolution
 		lua_getglobal(theScreenState, _name);
@@ -192,27 +205,25 @@ float CLuaInterface::getFloatValue(const char * _name, int _type)
 	switch (_type)
 	{
 	case 1: /// For main file
-		lua_getglobal(theLuaState, _name);
-		return static_cast<float>(lua_tonumber(theLuaState, -1));
+		lua_getglobal(theHighscoreState, _name);
+		return static_cast<float>(lua_tonumber(theHighscoreState, -1));
 		break;
 	case 2: /// For Resolution
 		lua_getglobal(theScreenState, _name);
-		return static_cast<float>(lua_tonumber(theLuaState, -1));
+		return static_cast<float>(lua_tonumber(theScreenState, -1));
 		break;
 	case 3: /// For Player 
 		lua_getglobal(thePlayerState, _name);
-		return static_cast<float>(lua_tonumber(theLuaState, -1));
+		return static_cast<float>(lua_tonumber(thePlayerState, -1));
 		break;
 	case 4: /// For Objects
 		lua_getglobal(theObjectState, _name);
-		return static_cast<float>(lua_tonumber(theLuaState, -1));
+		return static_cast<float>(lua_tonumber(theObjectState, -1));
 		break;
 	default:
 		break;
 	}
 }
-	
-	
 
 char CLuaInterface::getCharValue(const char * varName, int _type)
 {
@@ -297,6 +308,7 @@ int CLuaInterface::getVariableValues(const char * varName, int & a, int & b, int
 	return true;
 }
 
+// For WayPoint handling
 float CLuaInterface::GetField(const char * key)
 {
 	int result = false;

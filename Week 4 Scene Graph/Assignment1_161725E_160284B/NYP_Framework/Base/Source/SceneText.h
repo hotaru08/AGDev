@@ -40,6 +40,11 @@ private:
 	GenericEntity* theCube;
 	CEnemy* theEnemy;
 
+	// For Highscore 
+	double m_dTimer;
+	int m_iHighScore;
+	int m_iCurrScore;
+
 	//static SceneText* sInstance; // The pointer to the object that gets registered
 };
 
