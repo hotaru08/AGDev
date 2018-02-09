@@ -50,7 +50,7 @@ void CLoadingState::Update(double dt)
 {
 	// Load GameState when spacebar is pressed
 	timer += dt;
-	if (timer >= 10)
+	if (timer >= 5)
 	{
 		cout << "Loading GameState" << endl;
 		SceneManager::GetInstance()->SetActiveScene("GameState");
@@ -84,7 +84,7 @@ void CLoadingState::Render()
 	EntityManager::GetInstance()->RenderUI();
 
 	modelStack.PushMatrix();
-	modelStack.Translate(Application::GetInstance().GetWindowWidth() * 0.5, (Application::GetInstance().GetWindowHeight() * 0.5) + timer * 60, 10);
+	modelStack.Translate(Application::GetInstance().GetWindowWidth() * 0.5, (Application::GetInstance().GetWindowHeight() * 0.5) + timer * 120, 10);
 	modelStack.Scale(Application::GetInstance().GetWindowWidth(), Application::GetInstance().GetWindowHeight(), 1);
 	RenderHelper::RenderMesh(MeshBuilder::GetInstance()->GetMesh("Black"));
 	modelStack.PopMatrix();

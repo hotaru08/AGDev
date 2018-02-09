@@ -1,5 +1,7 @@
 #include "WaypointManager.h"
 #include <iostream>
+#include "../lua/CLuaInterface.h"
+#include <string>
 using namespace std;
 
 // Allocating and initializing CPlayerInfo's static data member.  

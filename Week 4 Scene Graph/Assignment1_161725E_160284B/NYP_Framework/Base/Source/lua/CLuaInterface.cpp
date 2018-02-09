@@ -1,5 +1,6 @@
 #include "CLuaInterface.h"
 #include <iostream>
+#include "../Waypoint/WaypointManager.h"
 
 using std::cout;
 using std::endl;
@@ -79,11 +80,13 @@ bool CLuaInterface::Init()
 	{
 		// 2. load lua auxiliary libraries
 		luaL_openlibs(theEnemyState);
+		lua_register(theEnemyState, "AddWaypoint", RunWaypoint);
 
 		// 3. load lua script
 		luaL_dofile(theEnemyState, "Image//DM2240_Enemy.lua");
 		result = true;
 	}
+
 
 	// For Object
 	theObjectState = lua_open();
@@ -168,6 +171,20 @@ void CLuaInterface::saveFloatValue(const char * _name, float _value, int _type, 
 	//// Print values
 	char outputString[80];
 	sprintf(outputString, "%s = %f\n", _name, _value);
+	lua_pushstring(theLuaState, outputString);
+	lua_pushinteger(theLuaState, bOverwrite);
+	lua_pushinteger(theLuaState, _type);
+	lua_call(theLuaState, 3, 0);
+}
+
+void CLuaInterface::saveFieldValue(const char * _name, Vector3 _value, int _type, const bool bOverwrite)
+{
+	// read value of Lua variable
+	lua_getglobal(theLuaState, "SaveToLuaFile");
+
+	//// Print values
+	char outputString[80];
+	sprintf(outputString, "%s = {x=%f, y=%f, z=%f}\n", _name, _value.x, _value.y, _value.z);
 	lua_pushstring(theLuaState, outputString);
 	lua_pushinteger(theLuaState, bOverwrite);
 	lua_pushinteger(theLuaState, _type);
@@ -270,6 +287,25 @@ Vector3 CLuaInterface::getVector3values(const char * varName)
 	return Vector3(x,y,z);
 }
 
+Vector3 CLuaInterface::getVector3valuesE(const char * varName)
+{
+	// Get the stack
+	lua_getglobal(theEnemyState, varName);
+	lua_rawgeti(theEnemyState, -1, 1); // get the first value in the stack
+	int x = lua_tonumber(theEnemyState, -1);
+	lua_pop(theEnemyState, 1);
+
+	lua_rawgeti(theEnemyState, -1, 2);// get the second value 
+	int y = lua_tonumber(theEnemyState, -1);
+	lua_pop(theEnemyState, 1);
+
+	lua_rawgeti(theEnemyState, -1, 3);
+	int z = lua_tonumber(theEnemyState, -1);
+	lua_pop(theEnemyState, 1);
+
+	return Vector3(x, y, z);
+}
+
 float CLuaInterface::getDistanceSquared(const char * varName, Vector3 source, Vector3 destination)
 {
 	lua_getglobal(theLuaState, varName);
@@ -330,4 +366,18 @@ void CLuaInterface::error(const char *errorCode)
 		cout << errorMsg << endl;
 	else
 		cout << errorCode << " is not valid.\n*** Please contact the developer ***" << endl;
+}
+
+static int RunWaypoint(lua_State *state)
+{
+	std::vector<float>value;
+	// read value of Lua variable
+	int n = lua_gettop(state);
+	for (int i = 1; i <= n; ++i)
+	{
+		value.push_back(lua_tonumber(state, i));
+	}
+	CWaypointManager::GetInstance()->AddWaypoint(Vector3(value[0], value[1], value[2]));
+
+	return 0; // dont need get back anything
 }

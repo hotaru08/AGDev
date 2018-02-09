@@ -58,6 +58,7 @@ public:
 	// Getting and setting Values 
 	void saveIntValue(const char* _name, int _value, int _type, const bool bOverwrite = NULL);
 	void saveFloatValue(const char* _name, float _value, int _type, const bool bOverwrite = NULL);
+	void saveFieldValue(const char* _name, Vector3 _value, int _type, const bool bOverwrite = NULL);
 
 	// get a int value through the lua interface class
 	int getIntValue(const char* _name, int _type);
@@ -69,7 +70,8 @@ public:
 	char getCharValue(const char* varName, int _type);
 
 	// get Vector3 values through the Lua Interface class
-	Vector3 getVector3values(const char* varName);
+	Vector3 getVector3values(const char* varName); 
+	Vector3 getVector3valuesE(const char* varName);
 
 	// Get Distance square value through the Lua interface
 	float getDistanceSquared(const char* varName, Vector3 source, Vector3 destination);
@@ -82,4 +84,6 @@ public:
 
 	// Get error message using an error code
 	void error(const char *errorCode);
+
+	friend int RunWaypoint(lua_State* state);
 };

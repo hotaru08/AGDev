@@ -262,15 +262,16 @@ void SceneText::Init()
 	FileManager::GetInstance()->ReadMapFile("Files//Scene.csv");
 
 	// ------------------------------------------------- Waypoints ------------------------------------------------- //
-	lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, "Waypoint_A_1");
+	//luaL_dofile(CLuaInterface::GetInstance()->theEnemyState, "Image//DM2240_Enemy.lua");
+	/*lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, "Waypoint_A_1");
 	int aWayPoint = CWaypointManager::GetInstance()->AddWaypoint(Vector3(CLuaInterface::GetInstance()->GetField("x"),
 		CLuaInterface::GetInstance()->GetField("y"),
 		CLuaInterface::GetInstance()->GetField("z")));
 	lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, "Waypoint_A_2");
 	int anotherWaypoint = CWaypointManager::GetInstance()->AddWaypoint(aWayPoint, Vector3(CLuaInterface::GetInstance()->GetField("x"),
 		CLuaInterface::GetInstance()->GetField("y"),
-		CLuaInterface::GetInstance()->GetField("z")));
-	lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, "Waypoint_A_3");
+		CLuaInterface::GetInstance()->GetField("z")));*/
+	/*lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, "Waypoint_A_3");
 	CWaypointManager::GetInstance()->AddWaypoint(anotherWaypoint, Vector3(CLuaInterface::GetInstance()->GetField("x"),
 		CLuaInterface::GetInstance()->GetField("y"),
 		CLuaInterface::GetInstance()->GetField("z")));
@@ -278,7 +279,17 @@ void SceneText::Init()
 	CWaypointManager::GetInstance()->AddWaypoint(anotherWaypoint, Vector3(CLuaInterface::GetInstance()->GetField("x"),
 		CLuaInterface::GetInstance()->GetField("y"),
 		CLuaInterface::GetInstance()->GetField("z")));
-	CWaypointManager::GetInstance()->PrintSelf();
+	CWaypointManager::GetInstance()->PrintSelf();*/
+
+	/*for (int i = 3; i < CWaypointManager::GetInstance()->GetNumberOfWaypoints() + 1; ++i)
+	{
+		char name[80];
+		sprintf(name, "Waypoint_A_%d", i);
+		lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, name);
+		CWaypointManager::GetInstance()->AddWaypoint(anotherWaypoint, Vector3(CLuaInterface::GetInstance()->GetField("x"),
+			CLuaInterface::GetInstance()->GetField("y"),
+			CLuaInterface::GetInstance()->GetField("z")));
+	}*/
 
 	// ------------------------------------------------- Scene Graph ------------------------------------------------- //
 	ZombieBody = Create::Enemy("Body_Hi", Vector3(0.0f, 0.f, 0.0f), Vector3(2.f, 2.f, 2.f));
