@@ -41,7 +41,7 @@ int CWaypointManager::AddWaypoint(Vector3 position)
 	aNewWaypoint->SetPosition(position);
 	listOfWaypoints.push_back(aNewWaypoint);
 
-	CLuaInterface::GetInstance()->saveFieldValue("AddWaypoint", position, 4, false);
+	CLuaInterface::GetInstance()->saveFieldValue("\nAddWaypoint", position, 4, false);
 	return m_iID;
 }
 

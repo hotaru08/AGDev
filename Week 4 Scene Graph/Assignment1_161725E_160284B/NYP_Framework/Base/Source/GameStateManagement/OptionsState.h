@@ -4,6 +4,7 @@
 #include "Mtx44.h"
 #include "Mesh.h"
 #include "MatrixStack.h"
+#include "../TextEntity.h"
 #include "../FPSCamera.h"
 #include "../SpriteEntity.h"
 
@@ -15,6 +16,10 @@ class COptionState : public Scene
 	int NumCase;
 	int adjustReso;
 	int adjustMouse;
+	TextEntity* textObj[10];
+
+	// Height and Width of screen
+	int m_height, m_width;
 
 public:
 	COptionState();

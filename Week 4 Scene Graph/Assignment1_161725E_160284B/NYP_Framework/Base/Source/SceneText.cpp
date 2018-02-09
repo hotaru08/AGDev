@@ -511,6 +511,15 @@ void SceneText::Update(double dt)
 	// Updates the light 
 	GraphicsManager::GetInstance()->UpdateLights(dt);
 
+	// Reset Everything in the scene
+	if (KeyboardController::GetInstance()->IsKeyDown('Q'))
+	{
+		// Reset highscore 
+		CLuaInterface::GetInstance()->saveIntValue("CurrScore", 0, 1, true);
+		CLuaInterface::GetInstance()->saveIntValue("Highscore", m_iHighScore, 1);
+		m_iCurrScore = CLuaInterface::GetInstance()->getIntValue("CurrScore", 1);
+	}
+
 	// Updates the Highscore / CurrScore
 	m_dTimer += static_cast<float>(dt);
 	if (m_dTimer > 10.f)
