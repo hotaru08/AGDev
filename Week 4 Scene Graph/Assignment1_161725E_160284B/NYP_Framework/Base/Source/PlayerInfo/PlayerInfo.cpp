@@ -73,10 +73,10 @@ void CPlayerInfo::Init(void)
 	secondaryWeapon = new CGrenadeThrow();
 	secondaryWeapon->Init();
 
-	keyMoveForward = CLuaInterface::GetInstance()->getCharValue("moveForward");
-	keyMoveBackward = CLuaInterface::GetInstance()->getCharValue("moveBackward");
-	keyMoveLeft = CLuaInterface::GetInstance()->getCharValue("moveLeft");
-	keyMoveRight = CLuaInterface::GetInstance()->getCharValue("moveRight");
+	keyMoveForward = CLuaInterface::GetInstance()->getCharValue("moveForward", 2);
+	keyMoveBackward = CLuaInterface::GetInstance()->getCharValue("moveBackward" ,2);
+	keyMoveLeft = CLuaInterface::GetInstance()->getCharValue("moveLeft", 2);
+	keyMoveRight = CLuaInterface::GetInstance()->getCharValue("moveRight", 2);
 
 	// Returning distance squared
 	dist_squared = CLuaInterface::GetInstance()->getDistanceSquared("CalculateDistanceSquare" , Vector3(0, 0, 0), Vector3(10, 10, 10));

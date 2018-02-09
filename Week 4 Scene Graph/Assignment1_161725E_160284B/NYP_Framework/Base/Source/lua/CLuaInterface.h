@@ -51,17 +51,18 @@ public:
 	lua_State *theScreenState; /// For resolution
 	lua_State *thePlayerState; /// For Player info
 	lua_State *theEnemyState; /// For Enemy
+	lua_State *theObjectState; /// for kBivt
 	lua_State *theErrorState;
 
 	// Getting and setting Values 
 	void saveIntValue(const char* _name, int _value, int _type, const bool bOverwrite = NULL);
-	void saveFloatValue(const char* _name, int _value, int _type, const bool bOverwrite = NULL);
+	void saveFloatValue(const char* _name, float _value, int _type, const bool bOverwrite = NULL);
 
 	// get a int value through the lua interface class
 	int getIntValue(const char* _name, int _type);
 
 	// get a float value through the lua interface class
-	float getFloatValue(const char* _name);
+	float getFloatValue(const char* _name, int _type);
 
 	// get a char value through the lua interface class
 	char getCharValue(const char* varName, int _type);

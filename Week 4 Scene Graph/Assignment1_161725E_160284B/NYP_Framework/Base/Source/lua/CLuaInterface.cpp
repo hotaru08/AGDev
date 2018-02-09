@@ -72,6 +72,18 @@ bool CLuaInterface::Init()
 		result = true;
 	}
 
+	// For Object
+	theObjectState = lua_open();
+	if (theObjectState)
+	{
+		// 2. load lua auxiliary libraries
+		luaL_openlibs(theObjectState);
+
+		// 3. load lua script
+		luaL_dofile(theObjectState, "Image//DM2240_Object.lua");
+		result = true;
+	}
+
 	// For Error
 	theErrorState = lua_open();
 	if ((theLuaState) && (theErrorState))
@@ -135,14 +147,14 @@ void CLuaInterface::saveIntValue(const char * _name, int _value, int _type, cons
 	lua_call(theLuaState, 3, 0); 
 }
 
-void CLuaInterface::saveFloatValue(const char * _name, int _value, int _type, const bool bOverwrite)
+void CLuaInterface::saveFloatValue(const char * _name, float _value, int _type, const bool bOverwrite)
 {
 	// read value of Lua variable
 	lua_getglobal(theLuaState, "SaveToLuaFile");
 	
 	//// Print values
 	char outputString[80];
-	sprintf(outputString, "%s = %6.4f\n", _name, _value);
+	sprintf(outputString, "%s = %f\n", _name, _value);
 	lua_pushstring(theLuaState, outputString);
 	lua_pushinteger(theLuaState, bOverwrite);
 	lua_pushinteger(theLuaState, _type);
@@ -166,16 +178,41 @@ int CLuaInterface::getIntValue(const char * _name, int _type)
 		lua_getglobal(thePlayerState, _name);
 		return lua_tointeger(thePlayerState, -1);
 		break;
+	case 4: /// For Objects
+		lua_getglobal(theObjectState, _name);
+		return lua_tointeger(theObjectState, -1);
+		break;
 	default:
 		break;
 	}
 }
 
-float CLuaInterface::getFloatValue(const char * _name)
+float CLuaInterface::getFloatValue(const char * _name, int _type)
 {
-	lua_getglobal(theLuaState, _name);
-	return static_cast<float>(lua_tointeger(theLuaState, -1));
+	switch (_type)
+	{
+	case 1: /// For main file
+		lua_getglobal(theLuaState, _name);
+		return static_cast<float>(lua_tonumber(theLuaState, -1));
+		break;
+	case 2: /// For Resolution
+		lua_getglobal(theScreenState, _name);
+		return static_cast<float>(lua_tonumber(theLuaState, -1));
+		break;
+	case 3: /// For Player 
+		lua_getglobal(thePlayerState, _name);
+		return static_cast<float>(lua_tonumber(theLuaState, -1));
+		break;
+	case 4: /// For Objects
+		lua_getglobal(theObjectState, _name);
+		return static_cast<float>(lua_tonumber(theLuaState, -1));
+		break;
+	default:
+		break;
+	}
 }
+	
+	
 
 char CLuaInterface::getCharValue(const char * varName, int _type)
 {

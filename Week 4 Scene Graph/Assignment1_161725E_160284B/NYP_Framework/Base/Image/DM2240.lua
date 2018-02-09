@@ -15,7 +15,25 @@ function SaveToLuaFile(outputString, overwrite, _type)
 		elseif overwrite == 0 then	-- Append with new data
 			f = assert(io.open("Image/DM2240_Resolution.lua", "a"))
 		end
-		
+	elseif _type == 3 then 		-- Player Info
+		if overwrite == 1 then		-- Wipe the contents with new data
+			f = assert(io.open("Image/DM2240_Player.lua", "w"))
+		elseif overwrite == 0 then	-- Append with new data
+			f = assert(io.open("Image/DM2240_Player.lua", "a"))
+		end
+	elseif _type == 4 then 		-- Enemy
+		if overwrite == 1 then		-- Wipe the contents with new data
+			f = assert(io.open("Image/DM2240_Enemy.lua", "w"))
+		elseif overwrite == 0 then	-- Append with new data
+			f = assert(io.open("Image/DM2240_Enemy.lua", "a"))
+		end
+	elseif _type == 5 then 		-- Objects
+		if overwrite == 1 then		-- Wipe the contents with new data
+			f = assert(io.open("Image/DM2240_Objects.lua", "w"))
+		elseif overwrite == 0 then	-- Append with new data
+			f = assert(io.open("Image/DM2240_Objects.lua", "a"))
+		end
+						
 	end -- end of checking for type
    
    -- Write to the file
