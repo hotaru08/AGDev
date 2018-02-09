@@ -81,6 +81,7 @@ public:
 		NUM_STATES,
 	};
 	State currentState;
+	bool headGone;
 };
 
 // Create Enemy Entities

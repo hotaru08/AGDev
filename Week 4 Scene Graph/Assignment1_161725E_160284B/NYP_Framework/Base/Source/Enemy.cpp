@@ -78,6 +78,7 @@ void CEnemy::Init(void)
 	up.Set(0.0f, 1.0f, 0.0f);
 
 	currentState = STATE_MOVE;
+	headGone = false;
 }
 
 void CEnemy::Reset(void)
@@ -154,8 +155,11 @@ GroundEntity * CEnemy::GetTerrain(void)
 void CEnemy::Update(double dt)
 {
 	////position.y = 0.f;
-	Vector3 viewVector = Vector3(target.x - position.x, 0, target.z - position.z).Normalized();
-	position += viewVector * (float)m_dSpeed * (float)dt;
+	if (currentState != STATE_IDLE)
+	{
+		Vector3 viewVector = Vector3(target.x - position.x, 0, target.z - position.z).Normalized();
+		position += viewVector * (float)m_dSpeed * (float)dt;
+	}
 
 	// constrain
 	//Constrain();
@@ -178,10 +182,9 @@ void CEnemy::Update(double dt)
 		direction = -1;
 	}
 
-	for (auto go : EntityManager::GetInstance()->returnEnemy())
+	if (headGone)
 	{
-		if (go->getName() == "Head_Hi" && go->IsDone() == true)
-			currentState = STATE_IDLE;
+		currentState = STATE_IDLE;
 	}
 
 	if (currentState != STATE_IDLE)
@@ -229,6 +232,9 @@ void CEnemy::Update(double dt)
 		target.z = position.z;
 		target.y = 0.f;
 	}
+
+	if (!headGone)
+		headGone = EntityManager::GetInstance()->FindEnemy("Head_Hi");
 }
 
 void CEnemy::Constrain(void)

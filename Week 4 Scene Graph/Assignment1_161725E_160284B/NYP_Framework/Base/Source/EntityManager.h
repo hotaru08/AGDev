@@ -44,6 +44,18 @@ public:
 	list<EntityBase*>&returnEnemy(void);
 	list<EntityBase*>&returnEntity(void);
 
+	bool FindEnemy(string name)
+	{
+		for (auto go : EnemyList)
+		{
+			if (go->getName() == "Head_Hi")
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 private:
 	EntityManager();
 	virtual ~EntityManager();
