@@ -469,6 +469,18 @@ void SceneText::Update(double dt)
 	if (KeyboardController::GetInstance()->IsKeyDown('P'))
 		lights[0]->position.y += (float)(10.f * dt);
 
+	static bool isKeyPressedC = false;
+	if (KeyboardController::GetInstance()->IsKeyDown('C') && !isKeyPressedC)
+	{
+		CWaypointManager::GetInstance()->AddWaypoint(CPlayerInfo::GetInstance()->GetPos());
+		isKeyPressedC = true;
+	}
+	else
+	{
+		isKeyPressedC = false;
+	}
+
+
 	// if the left mouse button was released
 	if (MouseController::GetInstance()->IsButtonReleased(MouseController::LMB))
 	{

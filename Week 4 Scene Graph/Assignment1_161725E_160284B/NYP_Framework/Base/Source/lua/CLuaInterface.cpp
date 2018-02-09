@@ -184,7 +184,7 @@ void CLuaInterface::saveFieldValue(const char * _name, Vector3 _value, int _type
 
 	//// Print values
 	char outputString[80];
-	sprintf(outputString, "%s = {x=%f, y=%f, z=%f}\n", _name, _value.x, _value.y, _value.z);
+	sprintf(outputString, "%s = (%f, %f, %f)\n", _name, _value.x, _value.y, _value.z);
 	lua_pushstring(theLuaState, outputString);
 	lua_pushinteger(theLuaState, bOverwrite);
 	lua_pushinteger(theLuaState, _type);
