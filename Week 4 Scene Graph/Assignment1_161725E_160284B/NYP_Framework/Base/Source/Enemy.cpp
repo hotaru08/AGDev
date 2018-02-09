@@ -65,6 +65,7 @@ void CEnemy::Init(void)
 	listOfWaypoints.push_back(0);
 	listOfWaypoints.push_back(1);
 	listOfWaypoints.push_back(2);
+	listOfWaypoints.push_back(3);
 
 	m_iWayPointIndex = 0;
 
@@ -75,6 +76,8 @@ void CEnemy::Init(void)
 		target = Vector3(0, 0, 0);
 	cout << "Next target: " << target << endl;
 	up.Set(0.0f, 1.0f, 0.0f);
+
+	currentState = STATE_MOVE;
 }
 
 void CEnemy::Reset(void)
@@ -150,10 +153,7 @@ GroundEntity * CEnemy::GetTerrain(void)
 
 void CEnemy::Update(double dt)
 {
-	target.x = CPlayerInfo::GetInstance()->GetPos().x;
-	target.z = CPlayerInfo::GetInstance()->GetPos().z;
-	target.y = 0.f;
-	//position.y = 0.f;
+	////position.y = 0.f;
 	Vector3 viewVector = Vector3(target.x - position.x, 0, target.z - position.z).Normalized();
 	position += viewVector * (float)m_dSpeed * (float)dt;
 
@@ -178,14 +178,56 @@ void CEnemy::Update(double dt)
 		direction = -1;
 	}
 
-	if ((target - position).LengthSquared() < 25.0f)
+	for (auto go : EntityManager::GetInstance()->returnEnemy())
 	{
-		CWaypoint* nextWaypoint = GetNextWaypoint();
-		if (nextWaypoint)
-			target = nextWaypoint->GetPosition();
-		else
-			target = Vector3(0, 0, 0);
-		cout << "Next target: " << target << endl;
+		if (go->getName() == "Head_Hi" && go->IsDone() == true)
+			currentState = STATE_IDLE;
+	}
+
+	if (currentState != STATE_IDLE)
+	{
+		if (((position.x - CPlayerInfo::GetInstance()->GetPos().x) * (position.x - CPlayerInfo::GetInstance()->GetPos().x) +
+			(position.z - CPlayerInfo::GetInstance()->GetPos().z) * (position.z - CPlayerInfo::GetInstance()->GetPos().z)) < (100 * 100)
+			&& currentState != STATE_CHASE)
+		{
+			currentState = STATE_CHASE;
+		}
+
+		else if (((position.x - CPlayerInfo::GetInstance()->GetPos().x) * (position.x - CPlayerInfo::GetInstance()->GetPos().x) +
+			(position.z - CPlayerInfo::GetInstance()->GetPos().z) * (position.z - CPlayerInfo::GetInstance()->GetPos().z)) > (100 * 100)
+			&& currentState != STATE_MOVE)
+		{
+			currentState = STATE_MOVE;
+			target = CWaypointManager::GetInstance()->GetNearestWaypoint(position)->GetPosition();
+		}
+	}
+
+	if (currentState == STATE_MOVE)
+	{
+		if (((position.x - target.x) * (position.x - target.x) +
+			(position.z - target.z) * (position.z - target.z)) < 25)
+		{
+			CWaypoint* nextWaypoint = GetNextWaypoint();
+			if (nextWaypoint)
+				target = nextWaypoint->GetPosition();
+			else
+				target = Vector3(0, 0, 0);
+			cout << "Next target: " << target << endl;
+		}
+	}
+
+	else if (currentState == STATE_CHASE)
+	{
+		target.x = CPlayerInfo::GetInstance()->GetPos().x;
+		target.z = CPlayerInfo::GetInstance()->GetPos().z;
+		target.y = 0.f;
+	}
+
+	else if (currentState == STATE_IDLE)
+	{
+		target.x = position.x;
+		target.z = position.z;
+		target.y = 0.f;
 	}
 }
 
@@ -255,6 +297,7 @@ CEnemy * Create::Enemy(const std::string & _meshName, const Vector3 & _position,
 	result->SetScale(_scale);
 	result->SetHealth(_health);
 	result->SetCollider(false);
+	result->setName(_meshName);
 	EntityManager::GetInstance()->AddEnemy(result, true);
 	return result;
 }

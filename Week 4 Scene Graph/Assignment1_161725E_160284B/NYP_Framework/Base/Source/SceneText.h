@@ -44,7 +44,7 @@ private:
 	double m_dTimer;
 	int m_iHighScore;
 	int m_iCurrScore;
-
+	CEnemy* ZombieBody;
 	//static SceneText* sInstance; // The pointer to the object that gets registered
 };
 

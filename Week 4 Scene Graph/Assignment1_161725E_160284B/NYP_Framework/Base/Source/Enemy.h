@@ -11,13 +11,7 @@ class Mesh;
 class CEnemy : public GenericEntity
 {
 protected:
-	enum State
-	{
-		STATE_MOVE,
-		STATE_CHASE,
-		STATE_RUN,
-	};
-	State currentState;
+	
 	Vector3 defaultPosition, defaultTarget, defaultUp;
 	Vector3 target, up;
 	Vector3 maxBoundary, minBoundary;
@@ -78,6 +72,15 @@ public:
 	void Constrain(void);
 	//render
 	void Render(void);
+
+	enum State
+	{
+		STATE_MOVE = 0,
+		STATE_CHASE,
+		STATE_IDLE,
+		NUM_STATES,
+	};
+	State currentState;
 };
 
 // Create Enemy Entities

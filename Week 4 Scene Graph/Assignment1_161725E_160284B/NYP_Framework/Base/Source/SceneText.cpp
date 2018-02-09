@@ -27,7 +27,7 @@
 #include "FileManager\FileManager.h"
 #include "Waypoint\WaypointManager.h"
 #include "Lua/CLuaInterface.h"
-
+#include "RenderHelper.h"
 #include <iostream>
 using namespace std;
 
@@ -261,8 +261,27 @@ void SceneText::Init()
 	FileManager::GetInstance()->init();
 	FileManager::GetInstance()->ReadMapFile("Files//Scene.csv");
 
+	// ------------------------------------------------- Waypoints ------------------------------------------------- //
+	lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, "Waypoint_A_1");
+	int aWayPoint = CWaypointManager::GetInstance()->AddWaypoint(Vector3(CLuaInterface::GetInstance()->GetField("x"),
+		CLuaInterface::GetInstance()->GetField("y"),
+		CLuaInterface::GetInstance()->GetField("z")));
+	lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, "Waypoint_A_2");
+	int anotherWaypoint = CWaypointManager::GetInstance()->AddWaypoint(aWayPoint, Vector3(CLuaInterface::GetInstance()->GetField("x"),
+		CLuaInterface::GetInstance()->GetField("y"),
+		CLuaInterface::GetInstance()->GetField("z")));
+	lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, "Waypoint_A_3");
+	CWaypointManager::GetInstance()->AddWaypoint(anotherWaypoint, Vector3(CLuaInterface::GetInstance()->GetField("x"),
+		CLuaInterface::GetInstance()->GetField("y"),
+		CLuaInterface::GetInstance()->GetField("z")));
+	lua_getglobal(CLuaInterface::GetInstance()->theEnemyState, "Waypoint_A_4");
+	CWaypointManager::GetInstance()->AddWaypoint(anotherWaypoint, Vector3(CLuaInterface::GetInstance()->GetField("x"),
+		CLuaInterface::GetInstance()->GetField("y"),
+		CLuaInterface::GetInstance()->GetField("z")));
+	CWaypointManager::GetInstance()->PrintSelf();
+
 	// ------------------------------------------------- Scene Graph ------------------------------------------------- //
-	CEnemy* ZombieBody = Create::Enemy("Body_Hi", Vector3(0.0f, 0.f, 0.0f), Vector3(2.f, 2.f, 2.f));
+	ZombieBody = Create::Enemy("Body_Hi", Vector3(0.0f, 0.f, 0.0f), Vector3(2.f, 2.f, 2.f));
 	ZombieBody->Init();
 	ZombieBody->InitLOD("Body_Hi", "Body_Mid", "Body_Lo");
 	ZombieBody->SetAABB(Vector3(1.5f, 1.5f, 1.5f), Vector3(-1.5f, -1.5f, -1.5f));
@@ -297,12 +316,12 @@ void SceneText::Init()
 	//         Child
 	//           |
 	// Child <- Base -> Child
-	CEnemy* ZombieLeftArm = Create::Enemy("LeftArm_Hi", Vector3(-2.5f, 0.5f, 1.f), Vector3(2.f, 2.f, 2.f));
-	ZombieLeftArm->Init();
-	ZombieLeftArm->InitLOD("LeftArm_Hi", "LeftArm_Mid", "LeftArm_Lo");
-	ZombieLeftArm->SetAABB(Vector3(1.f, 2.f, 2.f), Vector3(-1.f, -1.f, -1.f));
+	//CEnemy* ZombieLeftArm = Create::Enemy("LeftArm_Hi", Vector3(-2.5f, 0.5f, 1.f), Vector3(2.f, 2.f, 2.f));
+	//ZombieLeftArm->Init();
+	//ZombieLeftArm->InitLOD("LeftArm_Hi", "LeftArm_Mid", "LeftArm_Lo");
+	//ZombieLeftArm->SetAABB(Vector3(1.f, 2.f, 2.f), Vector3(-1.f, -1.f, -1.f));
 
-	CSceneNode* ZombieLeftArmNode = baseNode->AddChild(ZombieLeftArm);
+	//CSceneNode* ZombieLeftArmNode = baseNode->AddChild(ZombieLeftArm);
 
 	//         Child
 	//           |
@@ -321,11 +340,11 @@ void SceneText::Init()
 	// Child <- Base -> Child
 	//		|	 	 |
 	//	  Child		Child
-	CEnemy* ZombieLeftLeg = Create::Enemy("LeftLeg_Hi", Vector3(-1.0f, -5.0f, 0.0f), Vector3(2.f, 5.f, 2.f));
+	/*CEnemy* ZombieLeftLeg = Create::Enemy("LeftLeg_Hi", Vector3(-1.0f, -5.0f, 0.0f), Vector3(2.f, 5.f, 2.f));
 	ZombieLeftLeg->Init();
 	ZombieLeftLeg->InitLOD("LeftLeg_Hi", "LeftLeg_Mid", "LeftLeg_Lo");
 	ZombieLeftLeg->SetAABB(Vector3(1.f, 2.5f, 1.f), Vector3(-1.f, -2.5f, -1.f));
-	CSceneNode* ZombieLeftLegNode = baseNode->AddChild(ZombieLeftLeg);
+	CSceneNode* ZombieLeftLegNode = baseNode->AddChild(ZombieLeftLeg);*/
 
 	// ------------------------------------------------- Turret ------------------------------------------------- //
 
@@ -386,7 +405,7 @@ void SceneText::Update(double dt)
 {
 	// Update our entities
 	EntityManager::GetInstance()->Update(dt);
-	
+
 	/*Map Editor*/
 	if (KeyboardController::GetInstance()->IsKeyPressed(VK_NUMPAD2))
 		MapEditor::GetInstance()->mapEditing = true;
@@ -394,8 +413,8 @@ void SceneText::Update(double dt)
 	if (MapEditor::GetInstance()->mapEditing)
 		MapEditor::GetInstance()->updateOption(dt);
 
-	if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
-		FileManager::GetInstance()->EditMapFile("Files//Scene.csv");
+	/*if (KeyboardController::GetInstance()->IsKeyPressed(VK_RETURN))
+		FileManager::GetInstance()->EditMapFile("Files//Scene.csv");*/
 
 	if (KeyboardController::GetInstance()->IsKeyPressed('0'))
 		CSpatialPartition::GetInstance()->renderPos = true;
@@ -516,11 +535,17 @@ void SceneText::Update(double dt)
 		ss << "HighScore: " << m_iCurrScore;
 
 	textObj[5]->SetText(ss.str());
+
+	ss.str("");
+	ss << "Enemy State: " << ZombieBody->currentState;
+	textObj[6]->SetText(ss.str());
+
 }
 
 void SceneText::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	MS& modelStack = GraphicsManager::GetInstance()->GetModelStack();
 
 	GraphicsManager::GetInstance()->UpdateLightUniforms();
 
@@ -531,6 +556,16 @@ void SceneText::Render()
 
 	if (MapEditor::GetInstance()->mapEditing)
 		MapEditor::GetInstance()->renderObj();
+
+	for (int i = 0; i < CWaypointManager::GetInstance()->GetNumberOfWaypoints(); ++i)
+	{
+		modelStack.PushMatrix();
+		modelStack.Translate(CWaypointManager::GetInstance()->GetWaypoint(i)->GetPosition().x, 
+			CWaypointManager::GetInstance()->GetWaypoint(i)->GetPosition().y, 
+			CWaypointManager::GetInstance()->GetWaypoint(i)->GetPosition().z);
+		RenderHelper::RenderMesh(MeshBuilder::GetInstance()->GetMesh("sphere"));
+		modelStack.PopMatrix();
+	}
 
 	// Setup 2D pipeline then render 2D
 	int halfWindowWidth = Application::GetInstance().GetWindowWidth() / 2;

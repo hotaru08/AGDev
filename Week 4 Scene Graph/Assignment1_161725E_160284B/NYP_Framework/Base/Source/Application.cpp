@@ -72,7 +72,6 @@ void Application::Init()
 	CLuaInterface::GetInstance()->saveFloatValue("Player1", 200.10, 1, true);
 	CLuaInterface::GetInstance()->saveIntValue("Player2", 100, 1);
 
-
 	//Set the error callback
 	glfwSetErrorCallback(error_callback);
 

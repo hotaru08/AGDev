@@ -1,2 +1,2 @@
-CurrScore = 30
-Highscore = 30
+CurrScore = 140
+Highscore = 140
